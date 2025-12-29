@@ -1,0 +1,55 @@
+# version: '3.8'
+
+services:
+  # 1. Aplikasi PHP (Laravel)
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    image: bumi-explorer-app
+    container_name: bumi-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - bumi-network
+
+  # 2. Webserver Nginx
+  webserver:
+    image: nginx:alpine
+    container_name: bumi-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - bumi-network
+
+  # 3. Database
+  db:
+    image: mysql:8.0
+    container_name: bumi-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: bumi_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: king
+    ports:
+      - "33061:3306" # Port dibedakan jadi 33061 biar gak bentrok sama MySQL lokal laptop
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - bumi-network
+
+networks:
+  bumi-network:
+    driver: bridge
+
+volumes:
+  dbdata:
