@@ -43,26 +43,36 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Soal Struktur Bumi
+        // SOAL 1: Pilihan Ganda (Model Lama)
         Quiz::create([
             'topic_id' => $bumi->id,
+            'type' => 'multiple_choice', // Set Tipe
             'question' => 'Lapisan bumi yang paling luar dan tempat makhluk hidup tinggal disebut apa?',
             'option_a' => 'Mantel Bumi',
             'option_b' => 'Inti Luar',
             'option_c' => 'Kerak Bumi',
             'option_d' => 'Atmosfer',
             'correct_answer' => 'c',
-            'explanation' => 'Kerak bumi adalah lapisan terluar yang keras dan tipis dibandingkan lapisan lainnya.',
+            'explanation' => 'Kerak bumi adalah lapisan terluar yang keras.',
         ]);
 
+        // SOAL 2: Mitos vs Fakta (BARU!)
         Quiz::create([
             'topic_id' => $bumi->id,
-            'question' => 'Bagian bumi manakah yang memiliki suhu paling panas?',
-            'option_a' => 'Kerak Samudra',
-            'option_b' => 'Inti Dalam',
-            'option_c' => 'Mantel',
-            'option_d' => 'Kutub Utara',
-            'correct_answer' => 'b',
-            'explanation' => 'Inti dalam memiliki suhu ribuan derajat celcius, hampir sama panasnya dengan permukaan matahari.',
+            'type' => 'true_false', // Set Tipe
+            'question' => 'Inti Bumi itu dingin dan beku seperti es.',
+            // Option A-D kosongkan saja, tidak terpakai
+            'correct_answer' => 'false', // Artinya ini MITOS
+            'explanation' => 'Salah! Inti bumi justru sangat panas, suhunya mencapai 6.000 derajat Celcius!',
+        ]);
+
+        // SOAL 3: Mitos vs Fakta
+        Quiz::create([
+            'topic_id' => $bumi->id,
+            'type' => 'true_false',
+            'question' => 'Gunung berapi bisa meletus karena ada tekanan gas dari dalam bumi.',
+            'correct_answer' => 'true', // Artinya ini FAKTA
+            'explanation' => 'Benar! Magma didorong keluar oleh tekanan gas yang kuat.',
         ]);
 
         // --- TOPIK 2: ATMOSFER ---
