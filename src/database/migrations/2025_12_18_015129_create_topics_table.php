@@ -16,7 +16,7 @@ return new class extends Migration
         $table->string('title');        // Judul Bab (misal: Lapisan Bumi)
         $table->string('slug')->unique(); // URL ramah (misal: lapisan-bumi)
         $table->text('summary');        // Ringkasan pendek untuk di Card
-        $table->longText('content');    // Isi materi lengkap
+        $table->json('content')->nullable();    // Isi materi lengkap
         $table->string('image')->nullable(); // Gambar cover
         $table->timestamps();
     });

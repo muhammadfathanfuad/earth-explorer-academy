@@ -10,6 +10,10 @@ class Topic extends Model
     use HasFactory;
     protected $guarded = [];
 
+    protected $casts = [
+        'content' => 'array', // Otomatis convert JSON <-> Array
+    ];
+    
     public function quizzes()
     {
         return $this->hasMany(Quiz::class);

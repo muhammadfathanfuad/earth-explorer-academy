@@ -1,24 +1,11 @@
-# --- DOCKER & SYSTEM ---
+# --- SISTEM & IDE (Global) ---
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
-docker/mysql/data/  # Jangan commit data database mentah!
 *.log
 
-# --- LARAVEL (FOLDER SRC) ---
-src/vendor/
-src/node_modules/
-src/public/hot
-src/public/storage
-src/storage/*.key
-src/storage/app/public
-src/storage/debugbar
-src/storage/framework/cache/data/*
-src/storage/framework/sessions/*
-src/storage/framework/testing/*
-src/storage/framework/views/*
-src/storage/logs/*
-src/.env
-src/.env.backup
-src/.phpunit.result.cache
+# --- DOCKER DATA (PENTING!) ---
+# Kita wajib ignore ini agar database tidak ikut ke-upload ke Git
+# Karena database itu berat dan datanya rahasia/lokal.
+docker/mysql/data/
