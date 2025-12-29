@@ -1,151 +1,185 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bumi Explorer - Petualangan Sains</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
-    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Bumi Explorer') }}</title>
+
+    <link rel="dns-prefetch" href="//fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
     <style>
-        /* --- 1. BACKGROUND NEBULA ANIMASI --- */
+        /* --- 1. GLOBAL SPACE THEME --- */
         body {
-            font-family: 'Fredoka', sans-serif; /* Font lebih bulat & ramah anak */
-            background: linear-gradient(135deg, #1a0b2e 0%, #291848 30%, #46255a 70%, #1a0b2e 100%);
-            color: #ffffff;
+            background-color: #0b0d17;
+            font-family: 'Fredoka', sans-serif; /* Font default yang ramah anak */
+            color: #fff;
             min-height: 100vh;
-            overflow-x: hidden;
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* Trik CSS membuat Bintang tanpa gambar */
-        .stars, .stars2, .stars3 {
+        /* Background Nebula Bergerak */
+        body::before {
+            content: "";
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: transparent;
-            z-index: -1; /* Taruh di belakang konten */
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, #2a1b3d 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, #1a2a40 0%, transparent 40%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
+            z-index: -1;
+            animation: spacePulse 10s ease-in-out infinite alternate;
         }
-        
-        /* Bintang Kecil */
-        .stars {
-            width: 1px; height: 1px;
-            box-shadow: 10vw 10vh #fff, 20vw 40vh #fff, 40vw 10vh #fff, 60vw 80vh #fff, 80vw 20vh #fff, 30vw 90vh #fff; 
-            animation: animStar 50s linear infinite;
-        }
-        /* Bintang Sedang */
-        .stars2 {
-            width: 2px; height: 2px;
-            box-shadow: 15vw 15vh rgba(255,255,255,0.5), 35vw 45vh rgba(255,255,255,0.5), 75vw 25vh rgba(255,255,255,0.5); 
-            animation: animStar 100s linear infinite;
-        }
-        
-        @keyframes animStar {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-2000px); }
+        @keyframes spacePulse { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+
+        /* --- 2. HUD NAVBAR (MODIFIKASI UTAMA) --- */
+        .navbar-glass {
+            background: rgba(11, 13, 23, 0.7); /* Gelap Transparan */
+            backdrop-filter: blur(15px); /* Efek Blur Kaca */
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 210, 255, 0.2); /* Garis Neon Tipis */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* --- 2. GLASSMORPHISM UI (Efek Kaca) --- */
-        .navbar {
-            background: rgba(41, 24, 72, 0.6); /* Transparan ungu */
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-custom {
-            background: rgba(255, 255, 255, 0.08); /* Sangat transparan */
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px; /* Sudut lebih bulat (Friendly) */
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .card-custom:hover {
-            transform: translateY(-10px) scale(1.02);
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #ff9ff3; /* Glow Pink saat hover */
-            box-shadow: 0 0 25px rgba(255, 159, 243, 0.4);
-        }
-
-        /* Tombol yang lebih "Tasty" (seperti permen) */
-        .btn-sci-fi {
-            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
-            border: none;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
-            transition: all 0.3s;
-        }
-        .btn-sci-fi:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.6);
-            color: white;
-        }
-
-        /* Judul yang lebih Tech tapi Fun */
-        h1, h2, h3, .navbar-brand {
+        .navbar-brand {
             font-family: 'Rajdhani', sans-serif;
             font-weight: 700;
-            letter-spacing: 1px;
+            font-size: 1.8rem;
+            color: #00d2ff !important; /* Warna Cyan Neon */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #fff !important;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+        /* Garis bawah saat hover */
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 2px;
+            background: #00d2ff; transition: width 0.3s;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Dropdown Menu Gelap */
+        .dropdown-menu-dark-custom {
+            background: rgba(20, 20, 35, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-top: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .dropdown-item {
+            color: #ccc;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        .dropdown-item:hover {
+            background: rgba(0, 210, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Tombol Khusus */
+        .btn-sci-fi {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none; color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: bold; letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-sci-fi:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+            color: white;
+        }
+
+        /* Fix Container agar tidak ketabrak navbar */
+        main.py-4 {
+            padding-top: 2rem !important; 
         }
     </style>
 </head>
 <body>
-
-    <div class="stars"></div>
-    <div class="stars2"></div>
-
-    <nav class="navbar navbar-expand-lg navbar-dark py-3 sticky-top">
-        <div class="container">
-            <a class="navbar-brand fs-2 text-info" href="{{ route('home') }}">
-                🚀 BUMI EXPLORER
-            </a>
-            
-            <div class="d-flex align-items-center">
-                <a href="{{ route('leaderboard') }}" class="btn btn-sm btn-outline-warning me-3 rounded-pill px-3">
-                    🏆 Peringkat
+    <div id="app">
+        <nav class="navbar navbar-expand-md navbar-glass sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url('/') }}">
+                    🪐 BUMI EXPLORER
                 </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                    <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+                </button>
 
-                @auth
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
-                            👨‍🚀 {{ Auth::user()->name }}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-0">
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">Markas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('leaderboard') }}">Peringkat</a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto align-items-center gap-3">
+                        @guest
+                            @if (Route::has('login'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('login') }}">Masuk Misi</a>
+                                </li>
+                            @endif
+
+                            @if (Route::has('register'))
+                                <li class="nav-item">
+                                    <a class="btn btn-sm btn-sci-fi rounded-pill px-4" href="{{ route('register') }}">Daftar Anggota</a>
+                                </li>
+                            @endif
+                        @else
+                            <li class="nav-item d-flex align-items-center">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ Auth::user()->name }}" 
+                                     class="rounded-circle border border-2 border-warning shadow-sm" 
+                                     width="40" height="40" alt="Avatar">
+                                <div class="ms-2 d-none d-md-block lh-1 text-start">
+                                    <div class="fw-bold text-white">{{ Auth::user()->name }}</div>
+                                    <small class="text-warning" style="font-size: 0.75rem;">Kapten 🚀</small>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    🚪 Keluar
+                                </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
-                                    <button class="dropdown-item text-danger small">Keluar Markas</button>
                                 </form>
                             </li>
-                        </ul>
-                    </div>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-sm btn-sci-fi rounded-pill px-4">Mulai Misi</a>
-                @endauth
+                        @endguest
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <div class="container mt-5 pb-5">
-        @yield('content')
+        <main class="py-4 container">
+            @yield('content')
+        </main>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Kita tambahkan bintang acak via JS agar background tidak sepi
-        const starsContainer = document.querySelector('.stars');
-        let boxShadowValue = '';
-        for(let i = 0; i < 200; i++) {
-            let x = Math.floor(Math.random() * 100);
-            let y = Math.floor(Math.random() * 100);
-            boxShadowValue += `${x}vw ${y}vh #FFF, `;
-        }
-        // Hapus koma terakhir
-        boxShadowValue = boxShadowValue.slice(0, -2);
-        starsContainer.style.boxShadow = boxShadowValue;
-    </script>
 </body>
 </html>

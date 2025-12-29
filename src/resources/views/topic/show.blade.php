@@ -1,372 +1,234 @@
 @extends('layouts.app')
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
     <style>
-        /* --- STYLE UMUM --- */
-        .space-bg {
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        /* --- 1. SETTING FONT & WARNA DASAR --- */
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #bc13fe;
+            --glass-bg: rgba(12, 20, 40, 0.75); /* Gelap Transparan */
+            --glass-border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        /* --- 2. BACKGROUND & ORNAMEN --- */
+        .space-container {
+            position: relative;
+            border-radius: 25px;
             overflow: hidden;
-            position: relative;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            /* Background Lapis (Gradient + Pattern) */
+            background: 
+                radial-gradient(circle at top right, rgba(188, 19, 254, 0.15), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(0, 243, 255, 0.1), transparent 40%),
+                linear-gradient(180deg, #0f172a 0%, #020617 100%);
+            border: var(--glass-border);
         }
 
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 2s infinite;
+        /* Efek Bintang Bergerak */
+        .stars-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+            opacity: 0.6;
+            animation: moveStars 100s linear infinite;
+            z-index: 0;
+            pointer-events: none;
         }
+        @keyframes moveStars { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
 
-        @keyframes twinkle {
-            0% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-            }
-        }
-
-        /* Mascot Floating */
-        .mascot-float {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        /* Bubble Chat */
-        .bubble-chat {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 2px solid #00d4ff;
+        /* --- 3. BUBBLE CHAT (MODIFIKASI HOLOGRAM) --- */
+        .hologram-box {
+            background: rgba(255, 255, 255, 0.05); /* Sangat bening */
+            backdrop-filter: blur(15px); /* Efek Kaca */
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 5px solid var(--neon-cyan); /* Aksen Neon di Kiri */
             border-radius: 20px;
-            border-top-left-radius: 0;
+            color: #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
         }
-
-        .bubble-chat::before {
-            content: "";
-            position: absolute;
-            left: -12px;
-            top: 20px;
+        
+        /* Segitiga panah hologram */
+        .hologram-box::before {
+            content: ""; position: absolute;
+            left: -15px; top: 40px;
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-right: 15px solid #00d4ff;
+            border-right: 15px solid var(--neon-cyan);
+            filter: drop-shadow(0 0 5px var(--neon-cyan));
         }
 
-        /* --- STYLE KHUSUS SWIPE CARD (MITOS vs FAKTA) --- */
-        /* --- STYLE KHUSUS GAME CARD (RE-DESIGN) --- */
-        .tinder-card {
-            background: linear-gradient(180deg, #ffffff 0%, #f0f8ff 100%);
-            /* Gradasi halus */
-            border: 4px solid #ffffff;
-            border-radius: 30px;
-            /* Sudut sangat bulat */
-            box-shadow:
-                0 10px 25px rgba(0, 0, 0, 0.2),
-                /* Bayangan utama */
-                0 -5px 0px rgba(0, 0, 0, 0.02) inset;
-            /* Highlight dalam */
-            height: 500px;
-            /* Sedikit lebih tinggi */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            cursor: grab;
-            transition: transform 0.1s, box-shadow 0.2s;
-            user-select: none;
-            overflow: visible;
-            /* Biar ornamen bisa keluar kotak */
+        /* --- 4. MASCOT ANIMATION --- */
+        .mascot-glow {
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
+            animation: floatMascot 4s ease-in-out infinite;
+        }
+        @keyframes floatMascot {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
-        .tinder-card:active {
-            cursor: grabbing;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            /* Efek ditekan */
+        /* --- 5. PROGRESS BAR --- */
+        .neon-progress {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .neon-bar {
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            box-shadow: 0 0 10px var(--neon-cyan);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Ikon Tanya Mengambang */
-        .floating-icon {
-            position: absolute;
-            top: -40px;
-            background: #ffcc00;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            border: 4px solid white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            animation: floatIcon 3s ease-in-out infinite;
-            z-index: 20;
-        }
-
-        @keyframes floatIcon {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Indikator Arah (Kiri/Kanan) */
-        .swipe-hint {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-weight: bold;
-            font-size: 14px;
-            opacity: 0.3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .hint-left {
-            left: 15px;
-            color: #e74c3c;
-        }
-
-        .hint-right {
-            right: 15px;
-            color: #2ecc71;
-        }
-
-        .hint-arrow {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        /* Badge Stempel (Dipercantik) */
-        .stamp-badge {
-            position: absolute;
-            top: 60px;
-            /* Turunkan sedikit */
-            padding: 10px 30px;
-            border: 5px solid;
-            border-radius: 15px;
-            font-size: 35px;
-            /* Lebih besar */
-            font-weight: 800;
-            /* Lebih tebal */
+        /* --- 6. BUTTONS --- */
+        .btn-hologram {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Rajdhani', sans-serif;
             text-transform: uppercase;
-            opacity: 0;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.9);
-            /* Background semi transparan */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            font-family: 'Black Ops One', cursive;
-            /* Font stempel (opsional, fallback ke sans-serif) */
+            letter-spacing: 1px;
+            transition: all 0.3s;
         }
-
-        .stamp-fact {
-            border-color: #2ecc71;
-            color: #2ecc71;
-            transform: rotate(-15deg) scale(1.2);
+        .btn-hologram:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-cyan);
+            transform: scale(1.05);
         }
-
-        .stamp-myth {
-            border-color: #e74c3c;
-            color: #e74c3c;
-            transform: rotate(15deg) scale(1.2);
+        
+        .btn-start-quiz {
+            background: linear-gradient(45deg, #ff00cc, #333399);
+            border: none; color: white;
+            box-shadow: 0 0 15px rgba(255, 0, 204, 0.5);
+            animation: pulseBtn 2s infinite;
         }
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 204, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 0, 204, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 204, 0); } }
 
-        /* Tombol Kontrol Bawah */
-        .swipe-actions .btn-action {
-            width: 70px;
-            height: 70px;
-            /* Lebih besar */
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border: 4px solid white;
-            transition: transform 0.2s;
-        }
-
-        .btn-myth {
-            background: linear-gradient(135deg, #ff7675, #d63031);
+        /* Teks Judul Keren */
+        .neon-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
             color: white;
-        }
-
-        .btn-fact {
-            background: linear-gradient(135deg, #55efc4, #00b894);
-            color: white;
-        }
-
-        .swipe-actions .btn-action:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .swipe-actions .btn-action:active {
-            transform: scale(0.95);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
         }
     </style>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <div class="row justify-content-center">
         <div class="col-md-10">
 
-            <a href="{{ route('home') }}" class="btn btn-sm btn-outline-light mb-3">← Kembali ke Markas</a>
+            <a href="{{ route('home') }}" class="btn btn-sm btn-outline-light mb-4 rounded-pill px-3 border-opacity-50">
+                <i class="bi bi-arrow-left"></i> Kembali ke Markas
+            </a>
 
-            <div id="story-mode" class="space-bg p-5 mb-5" style="min-height: 500px;">
-                <div id="stars-container"></div>
-                <div class="progress mb-4" style="height: 5px; background: rgba(255,255,255,0.1);">
-                    <div id="read-progress" class="progress-bar bg-info" style="width: 0%"></div>
+            <div id="story-mode" class="space-container p-4 p-md-5 mb-5" style="min-height: 550px;">
+                <div class="stars-overlay"></div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2 text-white-50 small">
+                    <span>STATUS BRIEFING</span>
+                    <span id="progress-text">0%</span>
                 </div>
-                <div class="row align-items-center h-100">
-                    <div class="col-md-4 text-center mb-4 mb-md-0">
-                        <div class="mascot-float">
-                            <img id="dynamic-image" src=""
-                                class="img-fluid rounded-circle border border-4 border-info shadow-lg"
-                                style="width: 200px; height: 200px; object-fit: cover; display: none;">
-                            <div id="default-mascot" style="font-size: 100px; display: none;">👨‍🚀</div>
+                <div class="neon-progress mb-5">
+                    <div id="read-progress" class="neon-bar h-100" style="width: 0%"></div>
+                </div>
+
+                <div class="row align-items-center h-100 position-relative" style="z-index: 2;">
+                    
+                    <div class="col-md-4 text-center mb-5 mb-md-0">
+                        <div class="mascot-glow">
+                            <img id="dynamic-image" src="" 
+                                 class="rounded-circle border border-3 border-info shadow-lg bg-dark" 
+                                 style="width: 200px; height: 200px; object-fit: cover; display: none;">
+                            <div id="default-mascot" style="font-size: 140px; display: none; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));">👨‍🚀</div>
                         </div>
-                        <h4 class="mt-3 text-info fw-bold">{{ $topic->title }}</h4>
+                        
+                        <div class="mt-4">
+                            <span class="badge bg-black border border-info text-info rounded-pill px-4 py-2 shadow-lg">
+                                INSTRUKTUR MISI
+                            </span>
+                        </div>
                     </div>
+
                     <div class="col-md-8">
-                        <div class="bubble-chat p-4 text-white">
+                        <div class="hologram-box p-4 p-lg-5">
+                            
                             @foreach ($slides as $index => $slide)
-                                <div class="story-slide" id="slide-{{ $index }}"
-                                    data-image="{{ $slide['slide_image'] ?? '' }}" style="display: none;">
-                                    <div class="fs-4 lh-lg mb-0 animate__animated animate__fadeIn story-content">
-                                        {!! $slide['slide_text'] !!}</div>
+                                <div class="story-slide animate__animated animate__fadeIn" id="slide-{{ $index }}" 
+                                     data-image="{{ $slide['slide_image'] ?? '' }}" 
+                                     style="display: none;">
+                                    
+                                    <h2 class="neon-title mb-3 fs-3">
+                                        {{ $slide['title'] ?? 'Briefing Bagian ' . ($index + 1) }}
+                                    </h2>
+                                    
+                                    <div class="fs-5 lh-lg text-light fw-light">
+                                        {!! $slide['slide_text'] ?? $slide['content'] ?? '' !!}
+                                    </div>
                                 </div>
                             @endforeach
-                            <div class="d-flex justify-content-between mt-4">
-                                <button onclick="prevSlide()" id="btn-prev"
-                                    class="btn btn-outline-secondary rounded-pill px-4"
-                                    style="display: none;">Mundur</button>
-                                <button onclick="nextSlide()" id="btn-next"
-                                    class="btn btn-sci-fi rounded-pill px-4 ms-auto">Lanjut <span
-                                        class="ms-2">▶</span></button>
-                                <button onclick="enterQuizMode()" id="btn-quiz"
-                                    class="btn btn-warning fw-bold rounded-pill px-5 ms-auto animate__animated animate__pulse animate__infinite"
-                                    style="display: none;">SIAP UJI NYALI? 🚀</button>
+
+                            <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top border-secondary border-opacity-25">
+                                <button onclick="prevSlide()" id="btn-prev" class="btn btn-outline-light rounded-pill px-4" style="display: none;">
+                                    ← Mundur
+                                </button>
+                                
+                                <button onclick="nextSlide()" id="btn-next" class="btn btn-hologram rounded-pill px-5 py-2 fw-bold ms-auto">
+                                    Lanjut Membaca →
+                                </button>
+                                
+                                <button onclick="enterQuizMode()" id="btn-quiz" class="btn btn-start-quiz rounded-pill px-5 py-3 fw-bold ms-auto" style="display: none;">
+                                    🚀 MULAI TANTANGAN
+                                </button>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="quiz-mode" class="card card-custom border-info mb-5 animate__animated animate__zoomIn"
-                style="display: none;">
+            <div id="quiz-mode" class="card space-container border-0 mb-5 animate__animated animate__zoomIn" style="display: none;">
                 <div class="card-header bg-transparent border-bottom border-secondary py-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h3 class="m-0 fw-bold text-warning">🚀 Kuis: {{ $topic->title }}</h3>
-                        <span class="badge bg-primary fs-6">Skor: <span id="score-display">0</span></span>
+                        <h3 class="m-0 fw-bold neon-title">🚀 UJI KOMPETENSI</h3>
+                        <span class="badge bg-warning text-dark fs-6 rounded-pill">Skor: <span id="score-display">0</span></span>
                     </div>
                 </div>
 
-                <div class="card-body p-4 p-md-5 text-center">
-                    <div class="progress mb-4" style="height: 5px;">
-                        <div id="quiz-progress-bar" class="progress-bar bg-warning" style="width: 0%"></div>
+                <div class="card-body p-5 text-center position-relative" style="z-index: 2;">
+                    <div class="neon-progress mb-4" style="height: 5px;">
+                        <div id="quiz-progress-bar" class="neon-bar bg-warning" style="width: 0%"></div>
                     </div>
 
-                    <div id="question-loading">Loading Soal...</div>
+                    <div id="question-loading" class="text-white">Menghubungkan ke Pusat Data...</div>
 
                     <div id="layout-multiple-choice" style="display: none;">
-                        <div class="mb-3 text-center">
-                            <img id="mc-image" src="" class="img-fluid rounded-3 shadow-sm border border-secondary"
-                                style="max-height: 250px; object-fit: contain; display: none;">
+                        <div class="mb-4 text-center">
+                            <img id="mc-image" src="" class="img-fluid rounded-3 shadow border border-info" style="max-height: 250px; object-fit: contain; display: none;">
                         </div>
-                        <h3 class="mb-4 fw-bold text-white lh-base" id="mc-question-text">...</h3>
+                        <h3 class="mb-5 fw-bold text-white lh-base" id="mc-question-text">...</h3>
                         <div class="row g-3 justify-content-center">
-                            <div class="col-md-6"><button onclick="checkAnswer('a')" id="btn-a"
-                                    class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100"></button></div>
-                            <div class="col-md-6"><button onclick="checkAnswer('b')" id="btn-b"
-                                    class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100"></button></div>
-                            <div class="col-md-6"><button onclick="checkAnswer('c')" id="btn-c"
-                                    class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100"></button></div>
-                            <div class="col-md-6"><button onclick="checkAnswer('d')" id="btn-d"
-                                    class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100"></button></div>
+                            <div class="col-md-6"><button onclick="checkAnswer('a')" id="btn-a" class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100 rounded-4 border-opacity-50"></button></div>
+                            <div class="col-md-6"><button onclick="checkAnswer('b')" id="btn-b" class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100 rounded-4 border-opacity-50"></button></div>
+                            <div class="col-md-6"><button onclick="checkAnswer('c')" id="btn-c" class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100 rounded-4 border-opacity-50"></button></div>
+                            <div class="col-md-6"><button onclick="checkAnswer('d')" id="btn-d" class="btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100 rounded-4 border-opacity-50"></button></div>
                         </div>
                     </div>
 
                     <div id="layout-swipe" style="display: none;">
-
-                        <h4 class="text-info mb-4 fw-bold" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-                            ✨ MITOS ATAU FAKTA? ✨
-                        </h4>
-
-                        <div class="d-flex justify-content-center position-relative" style="margin-top: 40px;">
-                            <div id="swipe-card" class="tinder-card p-4 col-md-6 col-11">
-
-                                <div class="floating-icon">🤔</div>
-
-                                <div class="swipe-hint hint-left animate__animated animate__pulse animate__infinite">
-                                    <span class="hint-arrow">⬅</span>
-                                    <span>MITOS</span>
-                                </div>
-                                <div class="swipe-hint hint-right animate__animated animate__pulse animate__infinite">
-                                    <span class="hint-arrow">➡</span>
-                                    <span>FAKTA</span>
-                                </div>
-
-                                <div class="stamp-badge stamp-fact" id="stamp-fact">FAKTA!</div>
-                                <div class="stamp-badge stamp-myth" id="stamp-myth">MITOS!</div>
-
-                                <div class="mt-3 mb-2"
-                                    style="width: 100%; height: 180px; overflow: hidden; border-radius: 15px; display: none;"
-                                    id="swipe-image-container">
-                                    <img id="swipe-image" src=""
-                                        style="width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                                <div class="mt-4">
-                                    <h2 class="fw-bold mb-3 text-dark lh-sm" id="swipe-question-text"
-                                        style="font-family: 'Fredoka', sans-serif;">...</h2>
-                                    <p class="text-secondary small mt-3">Geser kartu ke jawabanmu!</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="swipe-actions d-flex justify-content-center gap-5 mt-5">
-                            <button onclick="triggerSwipe('left')" class="btn btn-myth btn-action">
-                                ✖
-                            </button>
-                            <button onclick="triggerSwipe('right')" class="btn btn-fact btn-action">
-                                ✔
-                            </button>
-                        </div>
-                    </div>
+                        <h4 class="text-info mb-4">Mode Swipe Aktif</h4>
+                         <p class="text-white-50">Gunakan gesture untuk menjawab.</p>
+                         <div id="swipe-card"></div> </div>
 
                     <div id="result-screen" style="display: none;">
                         <div class="display-1 mb-3">🏆</div>
                         <h2 class="fw-bold mb-3 text-white">Misi Selesai!</h2>
-                        <p class="fs-4 text-white">Skor Akhir: <span id="final-score"
-                                class="text-warning fw-bold"></span></p>
-                        <button onclick="location.reload()" class="btn btn-outline-light mt-3">Main Lagi</button>
-                        <a href="{{ route('leaderboard') }}" class="btn btn-sci-fi mt-3 ms-2">Lihat Peringkat</a>
+                        <p class="fs-4 text-white">Skor Akhir: <span id="final-score" class="text-warning fw-bold"></span></p>
+                        <button onclick="location.reload()" class="btn btn-outline-light mt-3 rounded-pill px-4">Main Lagi</button>
+                        <a href="{{ route('leaderboard') }}" class="btn btn-info text-white mt-3 ms-2 rounded-pill px-4">Lihat Peringkat</a>
                     </div>
                 </div>
             </div>
@@ -375,33 +237,34 @@
     </div>
 
     <script>
-        // --- 1. SETUP LOGIKA STORY MODE (SAMA SEPERTI SEBELUMNYA) ---
-        const starContainer = document.getElementById('stars-container');
-        for (let i = 0; i < 50; i++) {
-            let star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 2 + 's';
-            starContainer.appendChild(star);
-        }
-
+        // --- SETUP DATA ---
         const slideElements = document.querySelectorAll('.story-slide');
         const totalSlides = slideElements.length;
         const defaultImage = "{{ $topic->image ? asset('storage/' . $topic->image) : '' }}";
-        let currentSlide = 0;
+        
+        // Ambil data kuis, jika kosong set array kosong
+        const quizzes = @json($topic->quizzes ?? []); 
 
+        let currentSlide = 0;
+        let currentQIndex = 0;
+        let score = 0;
+        let isAnswering = false; // Pengaman agar tidak bisa klik 2x
+
+        // --- 1. LOGIKA STORY MODE (Materi) ---
         function showSlide(index) {
             slideElements.forEach(el => el.style.display = 'none');
             const activeSlide = document.getElementById('slide-' + index);
+            
             if (activeSlide) {
                 activeSlide.style.display = 'block';
+                
+                // Update Gambar Mascot
                 const imgElement = document.getElementById('dynamic-image');
                 const mascotPlaceholder = document.getElementById('default-mascot');
                 let slideImageSrc = activeSlide.getAttribute('data-image');
 
                 if (slideImageSrc && slideImageSrc.trim() !== "") {
-                    imgElement.src = slideImageSrc;
+                    imgElement.src = "{{ asset('storage') }}/" + slideImageSrc;
                     imgElement.style.display = 'inline-block';
                     mascotPlaceholder.style.display = 'none';
                 } else if (defaultImage) {
@@ -413,7 +276,10 @@
                     mascotPlaceholder.style.display = 'block';
                 }
             }
+
+            // Atur tombol Navigasi
             document.getElementById('btn-prev').style.display = index === 0 ? 'none' : 'inline-block';
+            
             if (index >= totalSlides - 1) {
                 document.getElementById('btn-next').style.display = 'none';
                 document.getElementById('btn-quiz').style.display = 'inline-block';
@@ -421,8 +287,11 @@
                 document.getElementById('btn-next').style.display = 'inline-block';
                 document.getElementById('btn-quiz').style.display = 'none';
             }
-            let percent = ((index + 1) / totalSlides) * 100;
+
+            // Update Progress Bar
+            let percent = Math.round(((index + 1) / totalSlides) * 100);
             document.getElementById('read-progress').style.width = percent + '%';
+            document.getElementById('progress-text').innerText = percent + '%';
         }
 
         function nextSlide() {
@@ -444,22 +313,19 @@
             document.getElementById('quiz-mode').style.display = 'block';
             startQuizGame();
         }
+
+        // Jalankan slide pertama saat loading
         if (totalSlides > 0) showSlide(0);
-        else document.querySelector('.col-md-8').innerHTML = '<p>Belum ada materi.</p>';
+        else document.querySelector('.hologram-box').innerHTML = '<p class="text-white">Materi belum tersedia.</p>';
 
 
-        // --- 2. SETUP LOGIKA HYBRID QUIZ ---
-        const quizzes = @json($topic->quizzes);
+        // --- 2. LOGIKA KUIS (PERBAIKAN RESET) ---
         const sfxCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
         const sfxWrong = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg');
 
-        let currentQIndex = 0;
-        let score = 0;
-        let isAnswering = false;
-
         function startQuizGame() {
-            if (quizzes.length === 0) {
-                alert("Belum ada soal!");
+            if (!quizzes || quizzes.length === 0) {
+                alert("Misi ini belum memiliki soal latihan!");
                 return;
             }
             showQuestion();
@@ -467,97 +333,92 @@
 
         function showQuestion() {
             let q = quizzes[currentQIndex];
-            isAnswering = false;
+            isAnswering = false; // Buka kunci jawaban
 
-            // Reset Tampilan
-            document.getElementById('layout-multiple-choice').style.display = 'none';
-            document.getElementById('layout-swipe').style.display = 'none';
+            // Reset Tampilan Container
             document.getElementById('question-loading').style.display = 'none';
-            document.getElementById('quiz-progress-bar').style.width = ((currentQIndex) / quizzes.length * 100) + "%";
+            document.getElementById('layout-multiple-choice').style.display = 'block';
+            
+            // Update Progress Bar Kuis
+            let progressPercent = ((currentQIndex + 1) / quizzes.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = progressPercent + "%";
 
-            // --- LOGIKA GAMBAR (BARU) ---
+            // Update Gambar Soal
             let imageUrl = q.image ? "{{ asset('storage') }}/" + q.image : null;
-
-            // --- CEK TIPE SOAL ---
-            if (q.type === 'true_false') {
-                // MODE SWIPE
-                document.getElementById('layout-swipe').style.display = 'block';
-                document.getElementById('swipe-question-text').innerText = q.question;
-
-                // Set Gambar Swipe
-                const swipeImgContainer = document.getElementById('swipe-image-container');
-                const swipeImg = document.getElementById('swipe-image');
-
-                if (imageUrl) {
-                    swipeImg.src = imageUrl;
-                    swipeImgContainer.style.display = 'block';
-                } else {
-                    swipeImgContainer.style.display = 'none'; // Sembunyikan kalau tidak ada gambar
-                }
-
-                resetCardPosition();
-                initSwipeCard();
+            const mcImg = document.getElementById('mc-image');
+            if (imageUrl) {
+                mcImg.src = imageUrl;
+                mcImg.style.display = 'inline-block';
             } else {
-                // MODE PILIHAN GANDA
-                document.getElementById('layout-multiple-choice').style.display = 'block';
-                document.getElementById('mc-question-text').innerText = q.question;
+                mcImg.style.display = 'none';
+            }
 
-                // Set Gambar MC
-                const mcImg = document.getElementById('mc-image');
-                if (imageUrl) {
-                    mcImg.src = imageUrl;
-                    mcImg.style.display = 'inline-block';
-                } else {
-                    mcImg.style.display = 'none';
-                }
+            // Update Teks Soal & Pilihan
+            document.getElementById('mc-question-text').innerText = q.question;
+            
+            // Set Teks Tombol (Cek apakah opsi ada isinya)
+            updateButton('btn-a', q.option_a);
+            updateButton('btn-b', q.option_b);
+            updateButton('btn-c', q.option_c);
+            updateButton('btn-d', q.option_d);
+            
+            // --- INI BAGIAN PENTING: CUCI BERSIH TOMBOL ---
+            // Kita kembalikan tombol ke kondisi 'btn-outline-light' murni
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                // Hapus kelas warna & animasi lama
+                btn.classList.remove('btn-success', 'btn-danger', 'animate__animated', 'animate__pulse', 'animate__shakeX');
+                
+                // Tambahkan kelas default
+                btn.classList.add('btn-outline-light');
+                
+                // Pastikan tombol bisa diklik lagi
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            });
+        }
 
-                // Set Tombol
-                document.getElementById('btn-a').innerText = q.option_a;
-                document.getElementById('btn-b').innerText = q.option_b;
-                document.getElementById('btn-c').innerText = q.option_c;
-                document.getElementById('btn-d').innerText = q.option_d;
-
-                // Reset warna tombol... (kode lama)
-                document.querySelectorAll('.answer-btn').forEach(btn => {
-                    btn.className = 'btn btn-outline-light w-100 p-4 fs-5 text-start answer-btn h-100';
-                    btn.disabled = false;
-                });
+        // Helper untuk update teks tombol (sembunyikan jika kosong)
+        function updateButton(btnId, text) {
+            const btn = document.getElementById(btnId);
+            if(text && text.trim() !== "") {
+                btn.innerText = text;
+                btn.parentElement.style.display = 'block'; // Tampilkan kolom
+            } else {
+                btn.parentElement.style.display = 'none'; // Sembunyikan jika opsi kosong
             }
         }
 
-        // --- LOGIKA JAWABAN (UMUM) ---
-        function handleAnswer(userAnswer) {
-            if (isAnswering) return;
+        function checkAnswer(choice) {
+            if (isAnswering) return; // Cegah klik ganda
             isAnswering = true;
+
             let q = quizzes[currentQIndex];
+            let isCorrect = (choice === q.correct_answer);
 
-            let isCorrect = (userAnswer === q.correct_answer);
+            let userBtn = document.getElementById('btn-' + choice);
+            let correctBtn = document.getElementById('btn-' + q.correct_answer);
 
+            // Efek Visual
             if (isCorrect) {
-                sfxCorrect.currentTime = 0;
-                sfxCorrect.play();
+                // sfxCorrect.play().catch(e => {}); // Un-comment jika ingin suara
                 score += 10;
+                userBtn.classList.remove('btn-outline-light');
+                userBtn.classList.add('btn-success', 'animate__animated', 'animate__pulse');
             } else {
-                sfxWrong.currentTime = 0;
-                sfxWrong.play();
+                // sfxWrong.play().catch(e => {}); // Un-comment jika ingin suara
+                userBtn.classList.remove('btn-outline-light');
+                userBtn.classList.add('btn-danger', 'animate__animated', 'animate__shakeX');
+                
+                // Beri tahu jawaban yang benar
+                if(correctBtn) {
+                    correctBtn.classList.remove('btn-outline-light');
+                    correctBtn.classList.add('btn-success');
+                }
             }
+            
             document.getElementById('score-display').innerText = score;
 
-            // Visual Feedback (Beda tiap mode)
-            if (q.type === 'multiple_choice') {
-                let correctBtnId = 'btn-' + q.correct_answer;
-                let userBtnId = 'btn-' + userAnswer;
-                if (isCorrect) {
-                    document.getElementById(userBtnId).classList.add('btn-success', 'animate__animated', 'animate__tada');
-                } else {
-                    document.getElementById(userBtnId).classList.add('btn-danger', 'animate__animated', 'animate__shakeX');
-                    document.getElementById(correctBtnId).classList.add('btn-success');
-                }
-            } else {
-                // Visual Feedback Swipe sudah terjadi di animasi kartu
-            }
-
-            // Lanjut Soal Berikutnya
+            // Jeda 1.5 detik sebelum ganti soal
             setTimeout(() => {
                 currentQIndex++;
                 if (currentQIndex < quizzes.length) {
@@ -568,103 +429,8 @@
             }, 1500);
         }
 
-        // --- LOGIKA KHUSUS PILIHAN GANDA ---
-        function checkAnswer(choice) {
-            handleAnswer(choice);
-        }
-
-        // --- LOGIKA KHUSUS SWIPE CARD (TOUCH & DRAG) ---
-        const card = document.getElementById('swipe-card');
-        let startX = 0,
-            currentX = 0,
-            isDragging = false;
-
-        function initSwipeCard() {
-            // Support Mouse & Touch
-            card.addEventListener('mousedown', startDrag);
-            card.addEventListener('touchstart', startDrag);
-
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag);
-
-            document.addEventListener('mouseup', endDrag);
-            document.addEventListener('touchend', endDrag);
-        }
-
-        function startDrag(e) {
-            if (isAnswering) return;
-            isDragging = true;
-            startX = (e.type === 'touchstart') ? e.touches[0].clientX : e.clientX;
-            card.style.transition = 'none'; // Matikan transisi biar responsif
-        }
-
-        function drag(e) {
-            if (!isDragging) return;
-            e.preventDefault(); // Cegah scroll layar HP
-            let clientX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
-            currentX = clientX - startX;
-
-            // Rotasi kartu sedikit saat digeser
-            let rotate = currentX * 0.1;
-            card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
-
-            // Tampilkan Stempel (Opacity)
-            if (currentX > 0) { // Geser Kanan (Fakta)
-                document.getElementById('stamp-fact').style.opacity = Math.min(currentX / 100, 1);
-                document.getElementById('stamp-myth').style.opacity = 0;
-                card.style.borderColor = '#2ecc71';
-            } else { // Geser Kiri (Mitos)
-                document.getElementById('stamp-myth').style.opacity = Math.min(Math.abs(currentX) / 100, 1);
-                document.getElementById('stamp-fact').style.opacity = 0;
-                card.style.borderColor = '#e74c3c';
-            }
-        }
-
-        function endDrag(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            card.style.transition = 'transform 0.3s ease'; // Hidupkan transisi lagi
-
-            // Cek Threshold (Apakah user menggeser cukup jauh?)
-            if (currentX > 100) {
-                // Swipe Kanan -> Jawab "true" (FAKTA)
-                card.style.transform = `translateX(1000px) rotate(30deg)`; // Lempar kartu keluar
-                handleAnswer('true');
-            } else if (currentX < -100) {
-                // Swipe Kiri -> Jawab "false" (MITOS)
-                card.style.transform = `translateX(-1000px) rotate(-30deg)`; // Lempar kartu keluar
-                handleAnswer('false');
-            } else {
-                // Batal Geser (Kembali ke tengah)
-                resetCardPosition();
-            }
-        }
-
-        function resetCardPosition() {
-            card.style.transform = 'translateX(0px) rotate(0deg)';
-            document.getElementById('stamp-fact').style.opacity = 0;
-            document.getElementById('stamp-myth').style.opacity = 0;
-            card.style.borderColor = 'transparent';
-        }
-
-        // Tombol Manual untuk Swipe (Versi Desktop/Klik)
-        function triggerSwipe(direction) {
-            if (isAnswering) return;
-            card.style.transition = 'transform 0.5s ease';
-
-            if (direction === 'right') { // Fakta
-                card.style.transform = `translateX(1000px) rotate(30deg)`;
-                handleAnswer('true');
-            } else { // Mitos
-                card.style.transform = `translateX(-1000px) rotate(-30deg)`;
-                handleAnswer('false');
-            }
-        }
-
-        // --- FINISH ---
         function showResult() {
             document.getElementById('layout-multiple-choice').style.display = 'none';
-            document.getElementById('layout-swipe').style.display = 'none';
             document.getElementById('result-screen').style.display = 'block';
             document.getElementById('final-score').innerText = score;
             saveScoreToDatabase(score);
@@ -681,7 +447,7 @@
                     topic_id: {{ $topic->id }},
                     score: finalScore
                 })
-            });
+            }).catch(e => console.log("Gagal simpan skor:", e));
         }
     </script>
 @endsection
