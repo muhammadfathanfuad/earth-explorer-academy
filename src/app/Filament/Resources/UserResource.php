@@ -28,6 +28,23 @@ class UserResource extends Resource
                     ->description('Isi nama saja untuk siswa. Email & Password hanya untuk Admin.')
                     ->schema([
                         
+                        Forms\Components\Radio::make('secret_badge')
+                        ->label('Lambang Rahasia (Password Gambar)')
+                        ->options([
+                            'rocket' => '🚀 Roket',
+                            'cat' => '🐱 Kucing',
+                            'pizza' => '🍕 Pizza',
+                            'ball' => '⚽ Bola',
+                            'star' => '⭐ Bintang',
+                            'car' => '🚗 Mobil',
+                            'ghost' => '👻 Hantu',
+                            'robot' => '🤖 Robot',
+                        ])
+                        ->inline()
+                        ->required()
+                        ->columnSpanFull()
+                        ->helperText('Siswa harus memilih gambar ini saat login.'),
+                    // -----------------------------
                         // 1. NAMA (WAJIB)
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Panggilan')

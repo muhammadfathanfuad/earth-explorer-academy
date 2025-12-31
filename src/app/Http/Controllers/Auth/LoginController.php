@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class AuthController extends Controller
+class LoginController extends Controller
 {
     // Daftar Pilihan Gambar (Emoji)
     protected $badges = [
@@ -25,28 +26,27 @@ class AuthController extends Controller
         'earth' => '🌍'
     ];
 
-    // Tampilkan Form Simpel
-    public function showLogin() {
+    public function showLoginForm()
+    {
         return view('auth.login');
     }
 
-    // Proses Login Tanpa Password
     public function login(Request $request)
     {
         // TAHAP 1: VALIDASI INPUT NAMA ATAU EMAIL
         if (!$request->has('current_stage')) {
             $request->validate(['login_id' => 'required|string|max:50']);
-            $input = trim($request->login_id);
+            $name = trim($request->login_id);
 
-            // Cek apakah Admin?
-            if (filter_var($input, FILTER_VALIDATE_EMAIL) || str_contains($input, '@')) {
-                $user = User::where('email', $input)->first();
+            // Cek apakah Admin? (Ada @)
+            if (str_contains($name, '@')) {
+                $user = User::where('email', $name)->first();
 
                 if ($user) {
                     // Asumsi user dengan email adalah admin, minta password
                     return back()->with([
-                        'stage' => 'admin_password',
-                        'temp_name' => $input,
+                        'stage' => 'admin_password', // Tahap password admin
+                        'temp_name' => $name,
                         'message' => 'Selamat datang, Admin! Silakan masukkan password Anda.'
                     ]);
                 } else {
@@ -55,21 +55,9 @@ class AuthController extends Controller
             }
 
             // Cek apakah User biasa sudah ada di database?
-            $user = User::where('name', $input)->first();
+            $user = User::where('name', $name)->first();
 
-            // User lama atau user lama tanpa badge
             if ($user) {
-                // Jika user belum punya badge, perlakukan seperti pendaftaran baru
-                if (is_null($user->secret_badge)) {
-                    return back()->with([
-                        'stage' => 'register',
-                        'temp_name' => $input,
-                        'options' => array_keys($this->badges),
-                        'badges_map' => $this->badges,
-                        'message' => 'Selamat datang! Akunmu belum punya gambar rahasia. Ayo buat sekarang!'
-                    ]);
-                }
-
                 // --- SKENARIO A: USER LAMA (LOGIN) ---
                 $realBadge = $user->secret_badge;
                 $distractors = array_keys($this->badges);
@@ -81,19 +69,19 @@ class AuthController extends Controller
 
                 return back()->with([
                     'stage' => 'challenge',
-                    'temp_name' => $input,
+                    'temp_name' => $name,
                     'options' => $options,
                     'badges_map' => $this->badges,
-                    'message' => 'Selamat datang kembali! Pilih gambar rahasia Anda.'
+                    'message' => 'Selamat datang kembali, Kapten! Buktikan identitasmu.'
                 ]);
             } else {
                 // --- SKENARIO B: USER BARU (DAFTAR) ---
                 return back()->with([
                     'stage' => 'register',
-                    'temp_name' => $input,
+                    'temp_name' => $name,
                     'options' => array_keys($this->badges),
                     'badges_map' => $this->badges,
-                    'message' => 'Halo Siswa Baru! Pilih 1 gambar untuk passwordmu.'
+                    'message' => 'Halo Kapten Baru! Pilih 1 gambar rahasia untuk mengunci akunmu.'
                 ]);
             }
         }
@@ -111,19 +99,8 @@ class AuthController extends Controller
             $request->validate(['selected_badge' => 'required|string']);
             $badge = $request->input('selected_badge');
 
-            // Cek apakah user sudah ada (untuk kasus user lama tanpa badge)
-            $user = User::where('name', $name)->first();
-            if ($user) {
-                // User lama, cukup update badgenya
-                $user->secret_badge = $badge;
-                $user->save();
-                Auth::login($user);
-                return redirect()->intended('/');
-            }
-
-            // User baru
             if (User::where('name', $name)->exists()) {
-                return redirect()->route('login')->with('error', 'Nama sudah digunakan.');
+                return redirect()->route('login')->with('error', 'Yah, nama itu baru saja diambil orang lain! Coba nama lain.');
             }
 
             $newUser = User::create([
@@ -134,7 +111,7 @@ class AuthController extends Controller
             ]);
 
             Auth::login($newUser);
-            return redirect()->intended('/');
+            return redirect()->intended('/home');
 
         } elseif ($stage === 'challenge') {
             $request->validate(['selected_badge' => 'required|string']);
@@ -143,16 +120,16 @@ class AuthController extends Controller
 
             if ($user && $user->secret_badge === $badge) {
                 Auth::login($user);
-                return redirect()->intended('/');
+                return redirect()->intended('/home');
             } else {
-                return redirect()->route('login')->with('error', 'Gambar salah! Akses ditolak.');
+                return redirect()->route('login')->with('error', '⛔ Akses Ditolak! Gambar salah. Jangan coba-coba menyusup!');
             }
 
         } elseif ($stage === 'admin_password') {
             $request->validate(['password' => 'required|string']);
 
             if (Auth::attempt(['email' => $name, 'password' => $request->password])) {
-                return redirect()->intended('/');
+                return redirect()->intended('/home');
             } else {
                 return back()->withErrors(['login_id' => 'Password Admin salah.'])->with([
                     'stage' => 'admin_password',
@@ -161,12 +138,5 @@ class AuthController extends Controller
                 ]);
             }
         }
-        
-        return redirect()->route('login');
-    }
-
-    public function logout() {
-        Auth::logout();
-        return redirect()->route('login');
     }
 }
