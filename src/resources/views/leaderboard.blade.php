@@ -188,9 +188,9 @@
         <div class="list-wrapper animate__animated animate__fadeInUp animate__delay-1s">
             <h5 class="text-white-50 mb-3 ms-2">Peringkat Lainnya</h5>
 
-            @foreach($users->skip(3) as $index => $user)
-                <div class="rank-item {{ Auth::id() == $user->id ? 'my-rank' : '' }}">
-                    <div class="rank-number">{{ $index + 4 }}</div>
+            @foreach($users->skip(3) as $user) <div class="rank-item {{ Auth::id() == $user->id ? 'my-rank' : '' }}">
+                    
+                    <div class="rank-number">{{ $loop->iteration + 3 }}</div>
                     
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ $user->name }}" class="rank-avatar bg-white">
                     

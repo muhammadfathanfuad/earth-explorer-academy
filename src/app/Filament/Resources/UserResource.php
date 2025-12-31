@@ -28,9 +28,28 @@ class UserResource extends Resource
                     ->description('Isi nama saja untuk siswa. Email & Password hanya untuk Admin.')
                     ->schema([
                         
+                        Forms\Components\Radio::make('secret_badge')
+                        ->label('Lambang Rahasia (Password Gambar)')
+                        ->options([
+                            'rocket' => '🚀 Roket',
+                            'cat' => '🐱 Kucing',
+                            'pizza' => '🍕 Pizza',
+                            'ball' => '⚽ Bola',
+                            'star' => '⭐ Bintang',
+                            'car' => '🚗 Mobil',
+                            'ghost' => '👻 Hantu',
+                            'robot' => '🤖 Robot',
+                            'earth' => '🌍 Bumi',
+                        ])
+                        ->inline()
+                        ->required()
+                        ->columnSpanFull()
+                        ->helperText('Siswa harus memilih gambar ini saat login.'),
+                    // -----------------------------
                         // 1. NAMA (WAJIB)
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Panggilan')
+                            ->prefixIcon('heroicon-o-user')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
@@ -88,13 +107,29 @@ class UserResource extends Resource
                     ->color(fn (string $state): string => str_contains($state, '@siswa.com') ? 'info' : 'success')
                     ->formatStateUsing(fn (string $state): string => str_contains($state, '@siswa.com') ? 'SISWA' : 'ADMIN'),
 
+                Tables\Columns\TextColumn::make('secret_badge')
+                    ->label('Lambang')
+                    ->formatStateUsing(fn (string $state): string => [
+                        'rocket' => '🚀 Roket',
+                        'cat' => '🐱 Kucing',
+                        'pizza' => '🍕 Pizza',
+                        'ball' => '⚽ Bola',
+                        'star' => '⭐ Bintang',
+                        'car' => '🚗 Mobil',
+                        'ghost' => '👻 Hantu',
+                        'robot' => '🤖 Robot',
+                        'earth' => '🌍 Bumi',
+                    ][$state] ?? $state)
+                    ->fontFamily('mono')
+                    ->toggleable(isToggledHiddenByDefault: false),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Terdaftar')
                     ->dateTime('d M Y')
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->icon('heroicon-m-pencil-square'),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
