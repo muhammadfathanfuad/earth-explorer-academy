@@ -21,17 +21,13 @@
 
                         <div class="mb-4 position-relative">
                             <label for="login_id" class="form-label text-warning fw-bold ps-2">
-                                🚀 Kode Kapten / Nama
+                                🚀 Nama Kapten
                             </label>
                             
                             <input id="login_id" type="text" 
                                    class="form-control form-control-space form-control-lg text-center fw-bold @error('login_id') is-invalid @enderror" 
                                    name="login_id" value="{{ old('login_id') }}" required autofocus
-                                   placeholder="Ketik Kodemu (Misal: KING01)">
-                            
-                            <div class="form-text text-white-50 text-center mt-2">
-                                *Admin/Guru silakan masukkan Email lengkap.
-                            </div>
+                                   placeholder="Masukkan nama kamu">
 
                             @error('login_id')
                                 <span class="invalid-feedback fw-bold bg-danger text-white px-2 py-1 rounded mt-1 text-center d-block" role="alert">
