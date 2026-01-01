@@ -66,7 +66,17 @@ class TopicResource extends Resource
                         ])
                         ->collapsible() // Biar bisa dilipat
                         ->itemLabel(fn (array $state): ?string => 'Slide: ' . strip_tags($state['slide_text'] ?? 'Slide Baru')),
+                            ]),
+
+            Forms\Components\Select::make('category')
+                ->label('Tema Misi')
+                ->options([
+                    'Daratan' => 'Daratan (Gunung, Hutan)',
+                    'Lautan' => 'Lautan (Samudra, Pantai)',
+                    'Angkasa' => 'Angkasa (Planet, Bintang)',
                 ])
+                ->required()
+                ->default('Daratan'),
         ]);
 }
 

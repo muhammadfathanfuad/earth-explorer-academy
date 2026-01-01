@@ -131,47 +131,62 @@
             🛸 Dek Misi Tersedia
         </h4>
 
-        <div class="row g-4">
-            @foreach($topics as $index => $topic)
-            <div class="col-md-6 animate__animated animate__zoomIn" style="animation-delay: {{ $index * 0.1 }}s;">
-                
-                <a href="{{ route('topic.show', $topic->slug) }}" class="text-decoration-none">
-                    <div class="glass-panel mission-card p-3 h-100">
-                        
-                        <img src="{{ $topic->image ? asset('storage/' . $topic->image) : 'https://source.unsplash.com/400x300/?space,planet' }}" class="mission-img mb-3">
-                        
-                        @php
-                            $userHighScore = $topic->scores->max('score');
-                        @endphp
-
-                        @if($userHighScore)
-                            <div class="mission-status bg-success text-white">
-                                ✅ Selesai ({{ $userHighScore }} XP)
-                            </div>
-                        @else
-                            <div class="mission-status bg-secondary text-white-50">
-                                🔒 Belum Dimulai
-                            </div>
-                        @endif
-
-                        <h4 class="fw-bold text-white mb-2">{{ $topic->title }}</h4>
-                        <p class="text-white-50 small mb-0">{{ Str::limit($topic->summary, 60) }}</p>
-                        
-                        <div class="mt-3 text-end">
-                            <span class="text-info small fw-bold">Mulai Misi ➜</span>
-                        </div>
-                    </div>
-                </a>
-
-            </div>
-            @endforeach
-        </div>
-
-        @if($topics->isEmpty())
+        {{-- JIKA KOSONG --}}
+        @if($groupedTopics->isEmpty())
             <div class="glass-panel p-5 text-center">
                 <h3>😴 Belum ada misi aktif.</h3>
                 <p>Tunggu instruksi dari Pusat Komando (Admin).</p>
             </div>
+        @else
+            {{-- LOOP PER KATEGORI/TEMA --}}
+            @foreach($groupedTopics as $category => $topics)
+                
+                {{-- Judul Kategori dengan Style Neon --}}
+                <div class="d-flex align-items-center mb-3 mt-4 animate__animated animate__fadeInLeft">
+                    <div class="bg-info rounded-pill me-3" style="width: 5px; height: 30px; box-shadow: 0 0 10px cyan;"></div>
+                    <h4 class="fw-bold text-uppercase m-0" style="color: #00d2ff; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);">
+                        SEKTOR: {{ $category }}
+                    </h4>
+                    <div class="flex-grow-1 ms-3 border-bottom border-secondary opacity-50"></div>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    {{-- LOOP KARTU MISI --}}
+                    @foreach($topics as $index => $topic)
+                    <div class="col-md-6 animate__animated animate__zoomIn" style="animation-delay: {{ $index * 0.1 }}s;">
+                        
+                        <a href="{{ route('topic.show', $topic->slug) }}" class="text-decoration-none">
+                            <div class="glass-panel mission-card p-3 h-100">
+                                
+                                <img src="{{ $topic->image ? asset('storage/' . $topic->image) : 'https://source.unsplash.com/400x300/?space,planet' }}" class="mission-img mb-3">
+                                
+                                @php
+                                    $userHighScore = $topic->scores->max('score');
+                                @endphp
+
+                                @if($userHighScore)
+                                    <div class="mission-status bg-success text-white">
+                                        ✅ Selesai ({{ $userHighScore }} XP)
+                                    </div>
+                                @else
+                                    <div class="mission-status bg-secondary text-white-50">
+                                        🔒 Belum Dimulai
+                                    </div>
+                                @endif
+
+                                <h4 class="fw-bold text-white mb-2">{{ $topic->title }}</h4>
+                                <p class="text-white-50 small mb-0">{{ Str::limit($topic->summary, 60) }}</p>
+                                
+                                <div class="mt-3 text-end">
+                                    <span class="text-info small fw-bold">Mulai Misi ➜</span>
+                                </div>
+                            </div>
+                        </a>
+
+                    </div>
+                    @endforeach
+                </div>
+            @endforeach
         @endif
 
     </div>
