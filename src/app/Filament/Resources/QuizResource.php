@@ -24,78 +24,104 @@ class QuizResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Buat Soal Game')
-                    ->schema([
-                        Forms\Components\Select::make('topic_id')
-                            ->relationship('topic', 'title')
-                            ->label('Topik Materi')
-                            ->required(),
+                Forms\Components\Select::make('topic_id')
+                    ->relationship('topic', 'title')
+                    ->required(),
 
-                        // --- 1. PILIH TIPE GAME ---
-                        Forms\Components\Select::make('type')
-                            ->label('Tipe Permainan')
-                            ->options([
-                                'multiple_choice' => 'Pilihan Ganda (ABCD)',
-                                'true_false' => 'Mitos vs Fakta (Swipe)',
-                            ])
-                            ->default('multiple_choice')
-                            ->live() // KUNCI REAKTIF: Agar form dibawahnya berubah realtime
-                            ->afterStateUpdated(fn(callable $set) => $set('correct_answer', null)) // Reset jawaban kalau ganti tipe
-                            ->required(),
-
-                        // --- 2. PERTANYAAN ---
-                        Forms\Components\Textarea::make('question')
-                            ->label(fn(Get $get) => $get('type') === 'true_false' ? 'Pernyataan (Mitos/Fakta)' : 'Pertanyaan Soal')
-                            ->required()
-                            ->columnSpanFull(),
-
-                        // --- 3. INPUT KHUSUS PILIHAN GANDA ---
-                        Forms\Components\Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('option_a')->label('Opsi A')->required(),
-                                Forms\Components\TextInput::make('option_b')->label('Opsi B')->required(),
-                                Forms\Components\TextInput::make('option_c')->label('Opsi C')->required(),
-                                Forms\Components\TextInput::make('option_d')->label('Opsi D')->required(),
-                            ])
-                            // Hanya muncul jika tipe = multiple_choice
-                            ->visible(fn(Get $get) => $get('type') === 'multiple_choice'),
-
-                        // ... (Input Tipe Soal & Topik di atasnya) ...
-
-                    
-                    // ... (lanjutan kode Textarea question yang lama) ...
-                        // --- 4. KUNCI JAWABAN (DINAMIS) ---
-                        Forms\Components\Select::make('correct_answer')
-                            ->label('Kunci Jawaban')
-                            ->options(function (Get $get) {
-                                // Jika Pilihan Ganda, opsinya A/B/C/D
-                                if ($get('type') === 'multiple_choice') {
-                                    return [
-                                        'a' => 'A',
-                                        'b' => 'B',
-                                        'c' => 'C',
-                                        'd' => 'D',
-                                    ];
-                                }
-                                // Jika Mitos/Fakta, opsinya Fakta/Mitos
-                                return [
-                                    'true' => 'FAKTA (Benar)',
-                                    'false' => 'MITOS (Salah)',
-                                ];
-                            })
-                            ->required(),
-
-                            // --- 5. PERTANYAAN & GAMBAR ---
-                        Forms\Components\FileUpload::make('image')
-                            ->label('Gambar Ilustrasi Soal (Opsional)')
-                            ->image() // Validasi harus gambar
-                            ->directory('quiz-images') // Simpan di folder storage/app/public/quiz-images
-                            ->columnSpanFull(),
-
-                        Forms\Components\Textarea::make('explanation')
-                            ->label('Penjelasan Ilmiah (Muncul setelah menjawab)')
-                            ->columnSpanFull(),
+                Forms\Components\Select::make('type')
+                    ->label('Tipe Soal')
+                    ->options([
+                        'multiple_choice' => 'Pilihan Ganda',
+                        'true_false' => 'Benar / Salah (Geser Kartu)',
+                        'sequence' => 'Puzzle Urutan (Susun Langkah)',
                     ])
+                    ->required()
+                    ->live()
+                    ->default('multiple_choice'),
+
+                Forms\Components\Textarea::make('question')
+                    ->required()
+                    ->label('Pertanyaan / Instruksi')
+                    ->columnSpanFull(),
+
+                Forms\Components\FileUpload::make('image')
+                    ->image()
+                    ->directory('quizzes'),
+
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('option_a')
+                            ->label(fn (Get $get) => $get('type') === 'sequence' ? 'Langkah 1 (Pertama)' : 'Opsi A')
+                            ->visible(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'sequence']))
+                            ->required(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'sequence'])),
+
+                        Forms\Components\TextInput::make('option_b')
+                            ->label(fn (Get $get) => $get('type') === 'sequence' ? 'Langkah 2' : 'Opsi B')
+                            ->visible(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'sequence']))
+                            ->required(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'sequence'])),
+
+                        Forms\Components\TextInput::make('option_c')
+                            ->label(fn (Get $get) => $get('type') === 'sequence' ? 'Langkah 3' : 'Opsi C')
+                            ->visible(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'sequence']))
+                            ->required(fn (Get $get) => $get('type') === 'multiple_choice' || $get('type') === 'sequence'),
+
+
+                        Forms\Components\TextInput::make('option_d')
+                            ->label(fn (Get $get) => $get('type') === 'sequence' ? 'Langkah 4 (Terakhir)' : 'Opsi D')
+                            ->visible(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'sequence']))
+                            ->required(fn (Get $get) => $get('type') === 'multiple_choice' || $get('type') === 'sequence'),
+                    ]),
+
+                // Field gambar untuk setiap opsi (hanya muncul untuk sequence)
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\FileUpload::make('option_a_image')
+                            ->label('Gambar Langkah 1')
+                            ->image()
+                            ->directory('quizzes/options')
+                            ->visible(fn (Get $get) => $get('type') === 'sequence')
+                            ->imageEditor()
+                            ->maxSize(2048)
+                            ->helperText('Upload gambar untuk langkah pertama (opsional)'),
+
+                        Forms\Components\FileUpload::make('option_b_image')
+                            ->label('Gambar Langkah 2')
+                            ->image()
+                            ->directory('quizzes/options')
+                            ->visible(fn (Get $get) => $get('type') === 'sequence')
+                            ->imageEditor()
+                            ->maxSize(2048)
+                            ->helperText('Upload gambar untuk langkah kedua (opsional)'),
+
+                        Forms\Components\FileUpload::make('option_c_image')
+                            ->label('Gambar Langkah 3')
+                            ->image()
+                            ->directory('quizzes/options')
+                            ->visible(fn (Get $get) => $get('type') === 'sequence')
+                            ->imageEditor()
+                            ->maxSize(2048)
+                            ->helperText('Upload gambar untuk langkah ketiga (opsional)'),
+
+                        Forms\Components\FileUpload::make('option_d_image')
+                            ->label('Gambar Langkah 4')
+                            ->image()
+                            ->directory('quizzes/options')
+                            ->visible(fn (Get $get) => $get('type') === 'sequence')
+                            ->imageEditor()
+                            ->maxSize(2048)
+                            ->helperText('Upload gambar untuk langkah keempat (opsional)'),
+                    ])
+                    ->visible(fn (Get $get) => $get('type') === 'sequence'),
+
+                Forms\Components\Select::make('correct_answer')
+                    ->label('Kunci Jawaban')
+                    ->options(fn (Get $get) => match ($get('type')) {
+                        'true_false' => ['true' => 'Benar', 'false' => 'Salah'],
+                        'multiple_choice' => ['a' => 'A', 'b' => 'B', 'c' => 'C', 'd' => 'D'],
+                        default => [],
+                    })
+                    ->visible(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'true_false']))
+                    ->required(fn (Get $get) => in_array($get('type'), ['multiple_choice', 'true_false'])),
             ]);
     }
 

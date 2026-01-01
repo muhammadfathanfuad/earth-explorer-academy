@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
 @section('content')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -23,19 +25,22 @@
             position: relative;
             border-radius: 30px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            
+
             /* Ganti background solid gelap menjadi Efek Kaca (Glassmorphism) */
-            background: rgba(255, 255, 255, 0.15); /* Putih transparan */
-            backdrop-filter: blur(20px); /* Efek blur background belakang */
+            background: rgba(255, 255, 255, 0.15);
+            /* Putih transparan */
+            backdrop-filter: blur(20px);
+            /* Efek blur background belakang */
             -webkit-backdrop-filter: blur(20px);
-            
-            border: 1px solid rgba(255, 255, 255, 0.4); /* Garis tepi lebih terang */
+
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            /* Garis tepi lebih terang */
             min-height: 600px;
         }
 
         /* HAPUS .stars-overlay agar tidak menumpuk dan kotor */
         .stars-overlay {
-            display: none; 
+            display: none;
         }
 
         /* --- 3. QUESTION BOX (LEBIH CERAH & FRIENDLY) --- */
@@ -54,7 +59,7 @@
         /* Update Bubble Chat agar senada dengan Glass Theme */
         .bubble-chat {
             /* Warna biru laut gelap transparan agar teks putih terbaca jelas */
-            background: rgba(15, 23, 42, 0.8); 
+            background: rgba(15, 23, 42, 0.8);
             border: 2px solid rgba(100, 200, 255, 0.5);
             border-radius: 20px;
             border-top-left-radius: 0;
@@ -334,6 +339,159 @@
             /* Sesuaikan warna border */
         }
 
+        /* --- STYLE PUZZLE URUTAN (CARD STYLE) --- */
+        .seq-item {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-radius: 20px;
+            padding: 0;
+            margin-bottom: 15px;
+            color: #1a1a2e;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: grab;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .seq-item:active {
+            cursor: grabbing;
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(79, 172, 254, 0.4);
+            border-color: #4FACFE;
+        }
+
+        .seq-item:hover {
+            border-color: #4FACFE;
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Efek saat sedang didrag (SortableJS Class) */
+        .sortable-ghost {
+            opacity: 0.5;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.3) 0%, rgba(0, 242, 254, 0.3) 100%);
+            transform: scale(0.95);
+        }
+
+        .sortable-drag {
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.2) 100%);
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.5);
+            z-index: 1000;
+        }
+
+        /* Container untuk konten card */
+        .seq-item-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 15px 20px;
+        }
+
+        /* Drag handle di kiri */
+        .seq-drag-handle {
+            color: #4FACFE;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+        }
+
+        .seq-drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* Container untuk gambar */
+        .seq-image-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .seq-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .seq-image-placeholder {
+            color: white;
+            font-size: 2rem;
+        }
+
+        /* Teks di tengah */
+        .seq-text {
+            flex: 1;
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Icon panah di kanan */
+        .seq-arrow {
+            color: #4FACFE;
+            font-size: 1.3rem;
+            margin-left: 15px;
+        }
+
+        .seq-number {
+            background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+            margin-right: 15px;
+            box-shadow: 0 4px 10px rgba(79, 172, 254, 0.3);
+        }
+
+        /* Responsive untuk mobile */
+        @media (max-width: 768px) {
+            .seq-item {
+                padding: 0;
+                margin-bottom: 12px;
+            }
+
+            .seq-item-content {
+                padding: 12px 15px;
+            }
+
+            .seq-image-container {
+                width: 60px;
+                height: 60px;
+                margin-right: 12px;
+            }
+
+            .seq-text {
+                font-size: 1rem;
+            }
+
+            .seq-drag-handle {
+                font-size: 1.2rem;
+                margin-right: 10px;
+            }
+        }
+
         /* --- STYLE KHUSUS RESULT SCREEN --- */
         .result-card {
             /* Background Gelap Transparan + Border Emas */
@@ -497,9 +655,11 @@
 
                             <div class="mt-4 w-100 rounded-4 overflow-hidden d-flex align-items-center justify-content-center img-bg-fix"
                                 style="height: 180px;">
+
                                 <img id="swipe-image" src=""
-                                    style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                                <span id="swipe-no-image" class="text-muted small fw-bold">Mode Hologram Aktif</span>
+                                    style="width: 100%; height: 100%; object-fit: cover; display: none; pointer-events: none;"
+                                    draggable="false" onmousedown="return false"> <span id="swipe-no-image"
+                                    class="text-muted small fw-bold">Mode Hologram Aktif</span>
                             </div>
 
                             <div class="text-center mt-3 px-1">
@@ -516,6 +676,29 @@
                         <button onclick="triggerSwipe('right')" class="btn btn-swipe-circle btn-yes">
                             <i class="bi bi-check-lg"></i>
                         </button>
+                    </div>
+                </div>
+
+                {{-- LAYOUT 3: PUZZLE URUTAN (SEQUENCE) --}}
+                <div id="layout-sequence" style="display: none;">
+                    <div class="text-center text-white mb-4">
+                        <h3 class="fw-bold" id="seq-question-text">...</h3>
+                        <p class="small text-info"><i class="bi bi-hand-index-thumb"></i> Geser kotak di bawah untuk
+                            mengurutkan!</p>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            {{-- Container Sortable --}}
+                            <ul id="sequence-list" class="list-unstyled">
+                                {{-- Item akan di-generate via JS --}}
+                            </ul>
+
+                            <button onclick="checkSequenceAnswer()"
+                                class="btn btn-warning w-100 rounded-pill fw-bold py-3 mt-3 shadow-lg">
+                                ✅ CEK URUTAN
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -555,15 +738,151 @@
 
     <script>
         // --- 1. SETUP DATA ---
+        const quizzes = @json($topic->quizzes ?? []);
+        console.log('Quiz Data:', quizzes); // <-- DEBUGGING LINE
+
         const slideElements = document.querySelectorAll('.story-slide');
         const totalSlides = slideElements.length;
         const defaultImage = "{{ $topic->image ? asset('storage/' . $topic->image) : '' }}";
-        const quizzes = @json($topic->quizzes ?? []);
 
         let currentSlide = 0;
         let currentQIndex = 0;
         let score = 0;
         let isAnswering = false;
+
+        // --- SWIPE LOGIC (REFACTORED INTO AN OBJECT) ---
+        // HARUS didefinisikan di awal untuk menghindari ReferenceError
+        // Menggunakan var untuk menghindari Temporal Dead Zone issue
+        var swipeGame = {
+            cardElement: null,
+            startX: 0,
+            currentX: 0,
+            isDragging: false,
+            // Simpan referensi event handler untuk bisa dihapus nanti
+            boundStartDrag: null,
+            boundDrag: null,
+            boundEndDrag: null,
+
+            init() {
+                // Hapus event listener lama jika ada
+                this.destroy();
+
+                this.cardElement = document.getElementById('swipe-card');
+                if (!this.cardElement) return;
+
+                // Bind event handlers dan simpan referensinya
+                this.boundStartDrag = this.startDrag.bind(this);
+                this.boundDrag = this.drag.bind(this);
+                this.boundEndDrag = this.endDrag.bind(this);
+
+                // Add mouse and touch event listeners
+                this.cardElement.addEventListener('mousedown', this.boundStartDrag);
+                this.cardElement.addEventListener('touchstart', this.boundStartDrag);
+
+                document.addEventListener('mousemove', this.boundDrag);
+                document.addEventListener('touchmove', this.boundDrag);
+
+                document.addEventListener('mouseup', this.boundEndDrag);
+                document.addEventListener('touchend', this.boundEndDrag);
+                
+                this.resetPosition();
+            },
+
+            destroy() {
+                // Hapus event listener jika ada
+                if (this.cardElement && this.boundStartDrag) {
+                    this.cardElement.removeEventListener('mousedown', this.boundStartDrag);
+                    this.cardElement.removeEventListener('touchstart', this.boundStartDrag);
+                }
+
+                if (this.boundDrag) {
+                    document.removeEventListener('mousemove', this.boundDrag);
+                    document.removeEventListener('touchmove', this.boundDrag);
+                }
+
+                if (this.boundEndDrag) {
+                    document.removeEventListener('mouseup', this.boundEndDrag);
+                    document.removeEventListener('touchend', this.boundEndDrag);
+                }
+
+                // Reset state
+                this.isDragging = false;
+                this.currentX = 0;
+                this.startX = 0;
+            },
+
+            startDrag(e) {
+                if (isAnswering || !this.cardElement) return;
+                this.isDragging = true;
+                this.startX = (e.type === 'touchstart') ? e.touches[0].clientX : e.clientX;
+                this.cardElement.style.transition = 'none';
+            },
+
+            drag(e) {
+                if (!this.isDragging || !this.cardElement) return;
+                let clientX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
+                this.currentX = clientX - this.startX;
+                let rotate = this.currentX * 0.1;
+                this.cardElement.style.transform = `translateX(${this.currentX}px) rotate(${rotate}deg)`;
+
+                if (this.currentX > 0) {
+                    document.getElementById('stamp-fact').style.opacity = Math.min(this.currentX / 100, 1);
+                    document.getElementById('stamp-myth').style.opacity = 0;
+                } else {
+                    document.getElementById('stamp-myth').style.opacity = Math.min(Math.abs(this.currentX) / 100, 1);
+                    document.getElementById('stamp-fact').style.opacity = 0;
+                }
+            },
+
+            endDrag(e) {
+                if (!this.isDragging || !this.cardElement) return;
+                this.isDragging = false;
+                this.cardElement.style.transition = 'transform 0.3s ease';
+
+                if (this.currentX > 100) {
+                    this.cardElement.style.transform = `translateX(1000px) rotate(30deg)`;
+                    setTimeout(() => {
+                        checkAnswer('true');
+                    }, 300);
+                } else if (this.currentX < -100) {
+                    this.cardElement.style.transform = `translateX(-1000px) rotate(-30deg)`;
+                    setTimeout(() => {
+                        checkAnswer('false');
+                    }, 300);
+                } else {
+                    this.resetPosition();
+                }
+                this.currentX = 0; // Reset currentX
+            },
+
+            resetPosition() {
+                if (!this.cardElement) return;
+                this.cardElement.style.transform = 'translateX(0px) rotate(0deg)';
+                document.getElementById('stamp-fact').style.opacity = 0;
+                document.getElementById('stamp-myth').style.opacity = 0;
+            },
+
+            trigger(direction) {
+                if (isAnswering || !this.cardElement) return;
+                this.cardElement.style.transition = 'transform 0.5s ease';
+                if (direction === 'right') {
+                    this.cardElement.style.transform = `translateX(1000px) rotate(30deg)`;
+                    setTimeout(() => {
+                        checkAnswer('true');
+                    }, 500);
+                } else {
+                    this.cardElement.style.transform = `translateX(-1000px) rotate(-30deg)`;
+                    setTimeout(() => {
+                        checkAnswer('false');
+                    }, 500);
+                }
+            }
+        };
+
+        // --- FUNCTIONS TO BE CALLED FROM HTML ---
+        function triggerSwipe(direction) {
+            swipeGame.trigger(direction);
+        }
 
         // --- LOGIKA STORY MODE ---
         function showSlide(index) {
@@ -644,19 +963,27 @@
         function showQuestion() {
             let q = quizzes[currentQIndex];
             isAnswering = false;
+
+            // Sembunyikan semua layout dulu termasuk result screen
             document.getElementById('question-loading').style.display = 'none';
             document.getElementById('layout-multiple-choice').style.display = 'none';
             document.getElementById('layout-swipe').style.display = 'none';
+            document.getElementById('layout-sequence').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'none'; // Pastikan result screen disembunyikan
 
-            // Update Progress & Text
+            // Update Progress
             let progressPercent = ((currentQIndex) / quizzes.length) * 100;
             document.getElementById('quiz-progress-bar').style.width = progressPercent + "%";
             document.getElementById('quiz-status').innerText = "Soal " + (currentQIndex + 1) + " dari " + quizzes.length;
 
-            let isSwipeMode = (q.type === 'true_false') || (!q.option_a && !q.option_b);
-
-            if (isSwipeMode) setupSwipeMode(q);
-            else setupMultipleChoiceMode(q);
+            // --- PILIH LAYOUT SESUAI TIPE ---
+            if (q.type === 'sequence') {
+                setupSequenceMode(q); // <--- Fungsi Baru
+            } else if (q.type === 'true_false' || (!q.option_a && !q.option_b)) {
+                setupSwipeMode(q);
+            } else {
+                setupMultipleChoiceMode(q);
+            }
         }
 
         function setupMultipleChoiceMode(q) {
@@ -700,8 +1027,18 @@
             }
 
             document.getElementById('swipe-question-text').innerText = q.question;
-            resetCardPosition();
-            initSwipeListeners();
+            
+            // Reset kartu sebelum inisialisasi
+            const cardElement = document.getElementById('swipe-card');
+            if (cardElement) {
+                cardElement.style.transform = 'translateX(0px) rotate(0deg)';
+                cardElement.style.transition = 'none';
+            }
+            document.getElementById('stamp-fact').style.opacity = 0;
+            document.getElementById('stamp-myth').style.opacity = 0;
+            
+            // Initialize the swipe game object
+            swipeGame.init();
         }
 
         function updateButton(btnId, text) {
@@ -755,87 +1092,172 @@
             }
 
             setTimeout(() => {
+                isAnswering = false; // Reset flag
                 currentQIndex++;
-                if (currentQIndex < quizzes.length) showQuestion();
-                else showResult();
+                if (currentQIndex < quizzes.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
             }, 1500);
         }
 
-        // --- SWIPE LOGIC ---
-        const card = document.getElementById('swipe-card');
-        let startX = 0,
-            currentX = 0,
-            isDragging = false;
+        // --- LOGIKA PUZZLE URUTAN (SEQUENCE) ---
+        let sortableInstance = null;
 
-        function initSwipeListeners() {
-            card.addEventListener('mousedown', startDrag);
-            card.addEventListener('touchstart', startDrag);
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag);
-            document.addEventListener('mouseup', endDrag);
-            document.addEventListener('touchend', endDrag);
+        function setupSequenceMode(q) {
+            document.getElementById('layout-sequence').style.display = 'block';
+            document.getElementById('seq-question-text').innerText = q.question;
+
+            const listEl = document.getElementById('sequence-list');
+            listEl.innerHTML = ''; // Reset isi list
+
+            // 1. Siapkan Data Item (A, B, C, D)
+            let items = [{
+                    id: 'a',
+                    text: q.option_a,
+                    image: q.option_a_image || null
+                },
+                {
+                    id: 'b',
+                    text: q.option_b,
+                    image: q.option_b_image || null
+                },
+                {
+                    id: 'c',
+                    text: q.option_c,
+                    image: q.option_c_image || null
+                },
+                {
+                    id: 'd',
+                    text: q.option_d,
+                    image: q.option_d_image || null
+                }
+            ].filter(i => i.text); // Hanya ambil yang tidak kosong
+
+            // 2. Acak Urutan (Shuffle) agar user menyusun ulang
+            items = items.sort(() => Math.random() - 0.5);
+
+            // 3. Render ke HTML dengan card style
+            items.forEach((item, index) => {
+                let li = document.createElement('li');
+                li.className = 'seq-item';
+                li.setAttribute('data-id', item.id); // ID ini kunci jawabannya
+                
+                // Siapkan gambar atau placeholder
+                let imageHtml = '';
+                if (item.image) {
+                    let imageUrl = "{{ asset('storage') }}/" + item.image;
+                    imageHtml = `<img src="${imageUrl}" alt="${item.text}" onerror="this.parentElement.innerHTML='<div class=\\'seq-image-placeholder\\'>📦</div>'">`;
+                } else {
+                    // Placeholder dengan emoji berdasarkan teks atau index
+                    const getEmoji = (text, idx) => {
+                        const textLower = text.toLowerCase();
+                        if (textLower.includes('evaporasi') || textLower.includes('uap') || textLower.includes('air')) return '💨';
+                        if (textLower.includes('kondensasi') || textLower.includes('awan')) return '☁️';
+                        if (textLower.includes('presipitasi') || textLower.includes('hujan')) return '🌧️';
+                        if (textLower.includes('langkah') || textLower.includes('step')) return '👣';
+                        // Default emoji berdasarkan index
+                        const defaults = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '🌊', '☁️', '💧', '🌧️'];
+                        return defaults[idx % defaults.length];
+                    };
+                    imageHtml = `<div class="seq-image-placeholder">${getEmoji(item.text, index)}</div>`;
+                }
+                
+                li.innerHTML = `
+                    <div class="seq-item-content">
+                        <div class="seq-drag-handle">
+                            <i class="bi bi-grip-vertical"></i>
+                        </div>
+                        <div class="seq-image-container">
+                            ${imageHtml}
+                        </div>
+                        <div class="seq-text">${item.text}</div>
+                        <div class="seq-arrow">
+                            <i class="bi bi-arrows-move"></i>
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(li);
+            });
+
+            // 4. Aktifkan SortableJS
+            if (sortableInstance) sortableInstance.destroy(); // Hapus instance lama jika ada
+            sortableInstance = new Sortable(listEl, {
+                animation: 200,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                handle: '.seq-drag-handle' // Hanya bisa drag dari handle
+            });
         }
 
-        function startDrag(e) {
+        function checkSequenceAnswer() {
             if (isAnswering) return;
-            isDragging = true;
-            startX = (e.type === 'touchstart') ? e.touches[0].clientX : e.clientX;
-            card.style.transition = 'none';
-        }
 
-        function drag(e) {
-            if (!isDragging) return;
-            let clientX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
-            currentX = clientX - startX;
-            let rotate = currentX * 0.1;
-            card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+            // 1. Ambil urutan saat ini
+            const listEl = document.getElementById('sequence-list');
+            const currentOrder = Array.from(listEl.children).map(li => li.getAttribute('data-id'));
 
-            if (currentX > 0) {
-                document.getElementById('stamp-fact').style.opacity = Math.min(currentX / 100, 1);
-                document.getElementById('stamp-myth').style.opacity = 0;
+            // 2. Kunci Jawaban yang Benar (Selalu A -> B -> C -> D)
+            // Kita cek apakah urutan arraynya ['a', 'b', 'c', 'd'] (sesuai jumlah item)
+            const correctOrder = ['a', 'b', 'c', 'd'].slice(0, currentOrder.length);
+
+            // 3. Bandingkan
+            const isCorrect = JSON.stringify(currentOrder) === JSON.stringify(correctOrder);
+
+            isAnswering = true;
+            if (isCorrect) {
+                score += 10;
+                sfxCorrect.play().catch(e => {});
+
+                // Efek Hijau dengan animasi
+                Array.from(listEl.children).forEach((li, index) => {
+                    setTimeout(() => {
+                        li.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+                        li.style.borderColor = '#38ef7d';
+                        li.style.boxShadow = '0 0 20px rgba(56, 239, 125, 0.5)';
+                        li.style.transform = 'scale(1.02)';
+                        li.style.color = '#fff';
+                        // Update text color
+                        const textEl = li.querySelector('.seq-text');
+                        if (textEl) textEl.style.color = '#fff';
+                    }, index * 100);
+                });
             } else {
-                document.getElementById('stamp-myth').style.opacity = Math.min(Math.abs(currentX) / 100, 1);
-                document.getElementById('stamp-fact').style.opacity = 0;
-            }
-        }
+                sfxWrong.play().catch(e => {});
 
-        function endDrag(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            card.style.transition = 'transform 0.3s ease';
-            if (currentX > 100) {
-                card.style.transform = `translateX(1000px) rotate(30deg)`;
-                checkAnswer('true');
-            } else if (currentX < -100) {
-                card.style.transform = `translateX(-1000px) rotate(-30deg)`;
-                checkAnswer('false');
-            } else {
-                resetCardPosition();
+                // Efek Merah dengan animasi shake
+                Array.from(listEl.children).forEach((li, index) => {
+                    setTimeout(() => {
+                        li.style.background = 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)';
+                        li.style.borderColor = '#ff4b2b';
+                        li.style.boxShadow = '0 0 20px rgba(255, 75, 43, 0.5)';
+                        li.style.animation = 'shake 0.5s';
+                        li.style.color = '#fff';
+                        // Update text color
+                        const textEl = li.querySelector('.seq-text');
+                        if (textEl) textEl.style.color = '#fff';
+                    }, index * 50);
+                });
             }
-        }
 
-        function resetCardPosition() {
-            card.style.transform = 'translateX(0px) rotate(0deg)';
-            document.getElementById('stamp-fact').style.opacity = 0;
-            document.getElementById('stamp-myth').style.opacity = 0;
-        }
-
-        function triggerSwipe(direction) {
-            if (isAnswering) return;
-            card.style.transition = 'transform 0.5s ease';
-            if (direction === 'right') {
-                card.style.transform = `translateX(1000px) rotate(30deg)`;
-                checkAnswer('true');
-            } else {
-                card.style.transform = `translateX(-1000px) rotate(-30deg)`;
-                checkAnswer('false');
-            }
+            // Lanjut soal berikutnya
+            setTimeout(() => {
+                isAnswering = false; // Reset flag
+                currentQIndex++;
+                if (currentQIndex < quizzes.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 2000); // Tunggu agak lama biar puas lihat hasilnya
         }
 
         // --- FINISH ---
         function showResult() {
             document.getElementById('layout-multiple-choice').style.display = 'none';
             document.getElementById('layout-swipe').style.display = 'none';
+            document.getElementById('layout-sequence').style.display = 'none'; // Sembunyikan layout sequence juga
             document.getElementById('result-screen').style.display = 'block';
             document.getElementById('final-score').innerText = score;
             document.getElementById('quiz-progress-bar').style.width = "100%";
