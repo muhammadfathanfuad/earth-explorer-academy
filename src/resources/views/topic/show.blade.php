@@ -616,11 +616,18 @@
         }
 
         function enterQuizMode() {
-            document.getElementById('story-mode').style.display = 'none';
-            document.getElementById('quiz-mode').style.display = 'block';
+            document.getElementById('story-mode').style.display = 'none'; // Sembunyikan Story
+            document.getElementById('quiz-mode').style.display = 'block'; // Tampilkan Kuis
             startQuizGame();
         }
-        if (totalSlides > 0) showSlide(0);
+        // --- LOGIKA BARU: CEK MATERI ---
+        if (totalSlides > 0) {
+            // Jika ada slide, mulai Story Mode dari slide 0
+            showSlide(0);
+        } else {
+            document.getElementById('story-mode').style.display = 'none';
+            enterQuizMode();
+        }
 
         // --- LOGIKA KUIS ---
         const sfxCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');

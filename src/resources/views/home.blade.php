@@ -141,11 +141,19 @@
             {{-- LOOP PER KATEGORI/TEMA --}}
             @foreach($groupedTopics as $category => $topics)
                 
-                {{-- Judul Kategori dengan Style Neon --}}
+                @php
+                    // Cek apakah ini kategori Tantangan
+                    $isChallenge = ($category == 'Tantangan');
+                    $headerColor = $isChallenge ? '#ff416c' : '#00d2ff'; // Merah jika Tantangan, Biru jika biasa
+                    $shadowColor = $isChallenge ? 'rgba(255, 65, 108, 0.5)' : 'rgba(0, 210, 255, 0.5)';
+                    $icon = $isChallenge ? '🔥' : 'SEKTOR:';
+                @endphp
+
+                {{-- Judul Kategori Dinamis --}}
                 <div class="d-flex align-items-center mb-3 mt-4 animate__animated animate__fadeInLeft">
-                    <div class="bg-info rounded-pill me-3" style="width: 5px; height: 30px; box-shadow: 0 0 10px cyan;"></div>
-                    <h4 class="fw-bold text-uppercase m-0" style="color: #00d2ff; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);">
-                        SEKTOR: {{ $category }}
+                    <div class="rounded-pill me-3" style="width: 5px; height: 30px; background: {{ $headerColor }}; box-shadow: 0 0 10px {{ $headerColor }};"></div>
+                    <h4 class="fw-bold text-uppercase m-0" style="color: {{ $headerColor }}; letter-spacing: 2px; text-shadow: 0 0 10px {{ $shadowColor }};">
+                        {{ $icon }} {{ $category }}
                     </h4>
                     <div class="flex-grow-1 ms-3 border-bottom border-secondary opacity-50"></div>
                 </div>

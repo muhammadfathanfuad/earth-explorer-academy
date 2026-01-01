@@ -74,6 +74,7 @@ class TopicResource extends Resource
                     'Daratan' => 'Daratan (Gunung, Hutan)',
                     'Lautan' => 'Lautan (Samudra, Pantai)',
                     'Angkasa' => 'Angkasa (Planet, Bintang)',
+                    'Tantangan' => '🔥 TANTANGAN AKHIR (Soal Saja)',
                 ])
                 ->required()
                 ->default('Daratan'),
