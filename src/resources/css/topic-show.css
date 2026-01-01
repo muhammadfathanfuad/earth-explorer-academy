@@ -1,0 +1,525 @@
+:root {
+    --color-primary: #4FACFE;
+    /* Biru Langit */
+    --color-secondary: #00F2FE;
+    /* Cyan */
+    --color-correct: #00b09b;
+    /* Hijau Sukses */
+    --color-wrong: #ff5f6d;
+    /* Merah Salah */
+    --card-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* --- 2. CONTAINER UTAMA (MODEL KACA/GLASS) --- */
+.space-container {
+    position: relative;
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+
+    /* Ganti background solid gelap menjadi Efek Kaca (Glassmorphism) */
+    background: rgba(255, 255, 255, 0.15);
+    /* Putih transparan */
+    backdrop-filter: blur(20px);
+    /* Efek blur background belakang */
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    /* Garis tepi lebih terang */
+    min-height: 600px;
+}
+
+/* HAPUS .stars-overlay agar tidak menumpuk dan kotor */
+.stars-overlay {
+    display: none;
+}
+
+/* --- 3. QUESTION BOX (LEBIH CERAH & FRIENDLY) --- */
+.question-card {
+    /* Ganti gradasi biru gelap menjadi gradasi yang lebih ceria tapi tetap kontras */
+    background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+/* Update Bubble Chat agar senada dengan Glass Theme */
+.bubble-chat {
+    /* Warna biru laut gelap transparan agar teks putih terbaca jelas */
+    background: rgba(15, 23, 42, 0.8);
+    border: 2px solid rgba(100, 200, 255, 0.5);
+    border-radius: 20px;
+    border-top-left-radius: 0;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+/* --- 4. TOMBOL JAWABAN (WARNA-WARNI) --- */
+.answer-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.answer-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* STATE: BENAR (HIJAU) */
+.answer-correct {
+    background: linear-gradient(45deg, #11998e, #38ef7d) !important;
+    border-color: #fff !important;
+    color: white !important;
+    box-shadow: 0 0 20px rgba(56, 239, 125, 0.6) !important;
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+/* STATE: SALAH (MERAH) */
+.answer-wrong {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b) !important;
+    border-color: #fff !important;
+    color: white !important;
+    box-shadow: 0 0 20px rgba(255, 75, 43, 0.6) !important;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(5px);
+    }
+
+    75% {
+        transform: translateX(-5px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* --- UBAH BACKGROUND GAMBAR --- */
+/* Agar gambar tidak punya kotak putih di belakangnya */
+.img-bg-fix {
+    background: rgba(0, 0, 0, 0.2);
+    /* Gelap transparan */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* --- 5. SWIPE CARD (FIXED) --- */
+/* Pastikan container ini TIDAK overflow hidden */
+.swipe-game-area {
+    position: relative;
+    height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible !important;
+    /* KUNCI AGAR TIDAK KEPOTONG */
+    z-index: 10;
+}
+
+.tinder-card {
+    width: 100%;
+    max-width: 360px;
+    height: 420px;
+    background: #ffffff;
+    /* Kartu Putih Solid agar kontras */
+    border: 6px solid #e0e0e0;
+    border-radius: 35px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.1s;
+    /* Responsif saat drag */
+}
+
+.tinder-card:active {
+    cursor: grabbing;
+    border-color: #4FACFE;
+}
+
+/* Icon Floating di atas kartu */
+.floating-icon {
+    position: absolute;
+    top: -35px;
+    background: #FFD700;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    border: 5px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 20;
+}
+
+/* Stempel Jawaban */
+.stamp-badge {
+    position: absolute;
+    top: 40px;
+    padding: 10px 20px;
+    border: 4px solid;
+    border-radius: 15px;
+    font-size: 28px;
+    font-weight: 900;
+    text-transform: uppercase;
+    opacity: 0;
+    z-index: 5;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.stamp-fact {
+    color: #2ecc71;
+    border-color: #2ecc71;
+    transform: rotate(-15deg);
+    left: 20px;
+}
+
+.stamp-myth {
+    color: #e74c3c;
+    border-color: #e74c3c;
+    transform: rotate(15deg);
+    right: 20px;
+}
+
+/* --- UBAH TOMBOL KEMBALI --- */
+.btn-back-custom {
+    background: rgba(255, 255, 255, 0.1);
+    /* Transparan */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s;
+}
+
+.btn-back-custom:hover {
+    background: rgba(0, 243, 255, 0.2);
+    /* Biru Neon saat hover */
+    border-color: #00f3ff;
+    color: #fff;
+    transform: translateX(-5px);
+}
+
+/* --- 6. TOMBOL SWIPE MANUAL (FIXED ALIGNMENT) --- */
+.btn-swipe-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 4px solid white;
+    display: flex !important;
+    /* Paksa Flexbox */
+    justify-content: center;
+    /* Tengah Horizontal */
+    align-items: center;
+    /* Tengah Vertikal */
+    font-size: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+    padding: 0;
+    /* Hapus padding bawaan bootstrap */
+}
+
+.btn-swipe-circle:hover {
+    transform: scale(1.1);
+}
+
+.btn-no {
+    background: #ff416c;
+    color: white;
+}
+
+.btn-yes {
+    background: #00b09b;
+    color: white;
+}
+
+/* --- 7. PROGRESS BAR RAINBOW --- */
+.progress-container {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.rainbow-bar {
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 0 15px #f5576c;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+}
+
+/* Bar Emas saat Selesai */
+.bar-completed {
+    background: linear-gradient(90deg, #FDC830 0%, #F37335 100%) !important;
+    box-shadow: 0 0 20px #FDC830 !important;
+    animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+    0% {
+        filter: brightness(100%);
+    }
+
+    50% {
+        filter: brightness(120%);
+    }
+
+    100% {
+        filter: brightness(100%);
+    }
+}
+
+/* --- 8. STORY ELEMENTS --- */
+.bubble-chat {
+    /* Ganti background putih jadi Kaca Gelap Biru */
+    background: rgba(16, 28, 50, 0.85);
+    border: 2px solid #00f3ff;
+    /* Border Neon */
+    border-radius: 20px;
+    border-top-left-radius: 0;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.15);
+    color: #e2e8f0;
+    /* Teks jadi putih terang */
+}
+
+/* Segitiga Chat ikut berubah warna */
+.bubble-chat::before {
+    content: "";
+    position: absolute;
+    left: -12px;
+    top: 20px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 12px solid #00f3ff;
+    /* Sesuaikan warna border */
+}
+
+/* --- STYLE PUZZLE URUTAN (CARD STYLE) --- */
+.seq-item {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border: 2px solid rgba(79, 172, 254, 0.3);
+    border-radius: 20px;
+    padding: 0;
+    margin-bottom: 15px;
+    color: #1a1a2e;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: grab;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    position: relative;
+}
+
+.seq-item:active {
+    cursor: grabbing;
+    transform: scale(1.02);
+    box-shadow: 0 12px 30px rgba(79, 172, 254, 0.4);
+    border-color: #4FACFE;
+}
+
+.seq-item:hover {
+    border-color: #4FACFE;
+    box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Efek saat sedang didrag (SortableJS Class) */
+.sortable-ghost {
+    opacity: 0.5;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.3) 0%, rgba(0, 242, 254, 0.3) 100%);
+    transform: scale(0.95);
+}
+
+.sortable-drag {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.2) 100%);
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 0 15px 35px rgba(79, 172, 254, 0.5);
+    z-index: 1000;
+}
+
+/* Container untuk konten card */
+.seq-item-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px 20px;
+}
+
+/* Drag handle di kiri */
+.seq-drag-handle {
+    color: #4FACFE;
+    font-size: 1.5rem;
+    margin-right: 15px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+}
+
+.seq-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Container untuk gambar */
+.seq-image-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-right: 15px;
+    background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.seq-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.seq-image-placeholder {
+    color: white;
+    font-size: 2rem;
+}
+
+/* Teks di tengah */
+.seq-text {
+    flex: 1;
+    color: #1a1a2e;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Icon panah di kanan */
+.seq-arrow {
+    color: #4FACFE;
+    font-size: 1.3rem;
+    margin-left: 15px;
+}
+
+.seq-number {
+    background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: white;
+    margin-right: 15px;
+    box-shadow: 0 4px 10px rgba(79, 172, 254, 0.3);
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+    .seq-item {
+        padding: 0;
+        margin-bottom: 12px;
+    }
+
+    .seq-item-content {
+        padding: 12px 15px;
+    }
+
+    .seq-image-container {
+        width: 60px;
+        height: 60px;
+        margin-right: 12px;
+    }
+
+    .seq-text {
+        font-size: 1rem;
+    }
+
+    .seq-drag-handle {
+        font-size: 1.2rem;
+        margin-right: 10px;
+    }
+}
+
+/* --- STYLE KHUSUS RESULT SCREEN --- */
+.result-card {
+    /* Background Gelap Transparan + Border Emas */
+    background: rgba(10, 15, 30, 0.9);
+    border: 3px solid #FFD700;
+    /* Warna Emas */
+    border-radius: 30px;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+    /* Cahaya Emas di belakang */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efek Kilau Emas pada Skor */
+.score-glow {
+    font-size: 5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 800;
+    background: linear-gradient(to bottom, #FFD700, #FDB931);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    animation: pulseScore 2s infinite;
+}
+
+@keyframes pulseScore {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    }
+
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
+    }
+
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    }
+}
