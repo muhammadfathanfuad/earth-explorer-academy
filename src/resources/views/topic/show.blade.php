@@ -18,71 +18,50 @@
             --card-bg: rgba(255, 255, 255, 0.1);
         }
 
-        /* --- 2. CONTAINER UTAMA (KACA) --- */
+        /* --- 2. CONTAINER UTAMA (MODEL KACA/GLASS) --- */
         .space-container {
             position: relative;
             border-radius: 30px;
-            /* overflow: hidden;  <-- HAPUS INI AGAR KARTU SWIPE TIDAK KEPOTONG */
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            background: linear-gradient(180deg, #162238 0%, #0a0f1c 100%);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            
+            /* Ganti background solid gelap menjadi Efek Kaca (Glassmorphism) */
+            background: rgba(255, 255, 255, 0.15); /* Putih transparan */
+            backdrop-filter: blur(20px); /* Efek blur background belakang */
+            -webkit-backdrop-filter: blur(20px);
+            
+            border: 1px solid rgba(255, 255, 255, 0.4); /* Garis tepi lebih terang */
             min-height: 600px;
         }
 
-        /* Container khusus Story agar bintang tidak keluar */
-        .story-wrapper {
-            position: relative;
-            border-radius: 30px;
-            overflow: hidden;
-            /* Hanya story yang di-crop */
-            height: 100%;
-            min-height: 600px;
-        }
-
-        /* Efek Bintang */
+        /* HAPUS .stars-overlay agar tidak menumpuk dan kotor */
         .stars-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
-            opacity: 0.6;
-            animation: moveStars 100s linear infinite;
-            pointer-events: none;
+            display: none; 
         }
 
-        @keyframes moveStars {
-            from {
-                background-position: 0 0;
-            }
-
-            to {
-                background-position: 1000px 1000px;
-            }
-        }
-
-        /* --- 3. QUESTION BOX (MODEL BARU: LEBIH FRIENDLY) --- */
+        /* --- 3. QUESTION BOX (LEBIH CERAH & FRIENDLY) --- */
         .question-card {
-            /* Ganti background putih jadi Gradasi Biru Malam */
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            /* Ganti gradasi biru gelap menjadi gradasi yang lebih ceria tapi tetap kontras */
+            background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
             border-radius: 25px;
             padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             position: relative;
             margin-bottom: 30px;
             color: #fff;
-            /* Teks Putih */
         }
 
-        .question-text {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
+        /* Update Bubble Chat agar senada dengan Glass Theme */
+        .bubble-chat {
+            /* Warna biru laut gelap transparan agar teks putih terbaca jelas */
+            background: rgba(15, 23, 42, 0.8); 
+            border: 2px solid rgba(100, 200, 255, 0.5);
+            border-radius: 20px;
+            border-top-left-radius: 0;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             color: #fff;
-            /* Pastikan teks pertanyaan putih */
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         /* --- 4. TOMBOL JAWABAN (WARNA-WARNI) --- */
@@ -427,7 +406,7 @@
                             </div>
                             <div class="mt-4">
                                 <span class="badge bg-white text-primary rounded-pill px-4 py-2 fw-bold shadow">
-                                    INSTRUKTUR MISI
+                                    VISUALISASI
                                 </span>
                             </div>
                         </div>

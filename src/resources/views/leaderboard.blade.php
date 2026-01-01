@@ -8,8 +8,8 @@
     /* --- 1. GLOBAL SPACE THEME --- */
     .leaderboard-container {
         min-height: 100vh;
-        /* Background Gelap + Aksen Ungu/Biru */
-        background: radial-gradient(circle at top, #2b1055, #000); 
+        /* HAPUS background lama (hitam/ungu gelap) agar background utama terlihat */
+        background: transparent; 
         position: relative;
         overflow-x: hidden;
         padding-bottom: 50px;

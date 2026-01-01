@@ -16,36 +16,71 @@
 
     <style>
         /* --- 1. GLOBAL SPACE THEME --- */
+        /* --- 1. GLOBAL SPACE THEME (FRIENDLY VERSION) --- */
         body {
-            background-color: #0b0d17;
-            font-family: 'Fredoka', sans-serif; /* Font default yang ramah anak */
-            color: #fff;
+            /* Ganti warna dasar hitam dengan gradasi vibrant */
+            background: linear-gradient(135deg, #4c1d95 0%, #2563eb 50%, #06b6d4 100%);
+            background-size: 200% 200%; /* Agar animasi background mulus */
+            font-family: 'Fredoka', sans-serif;
+            color: #fff; /* Teks tetap putih agar kontras */
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            animation: gradientFlow 15s ease infinite;
         }
 
-        /* Background Nebula Bergerak */
+        /* Animasi pergerakan gradasi agar tidak flat */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Overlay Bintang CSS (Lebih Bersih & Tajam) */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, #2a1b3d 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, #1a2a40 0%, transparent 40%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
+            background-image: 
+                radial-gradient(3px 3px at 20px 30px, #ffffff, rgba(0,0,0,0)), /* Sedikit diperbesar jadi 3px */
+                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 160px 120px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            
+            /* PERUBAHAN UTAMA DI SINI */
+            opacity: 0.9; /* Naikkan drastis dari 0.3 ke 0.9 agar jelas */
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8)); /* Efek glow agar kontras */
+            
             z-index: -1;
-            animation: spacePulse 10s ease-in-out infinite alternate;
+            pointer-events: none;
+            animation: twinkle 4s ease-in-out infinite alternate;
         }
-        @keyframes spacePulse { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+
+        /* Animasi Berkedip yang lebih tegas */
+        @keyframes twinkle {
+            0% { 
+                opacity: 0.5; 
+                transform: scale(0.9); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1.2); /* Membesar sedikit saat terang */
+                filter: drop-shadow(0 0 5px white); /* Kilauan makin terang */
+            }
+        }
 
         /* --- 2. HUD NAVBAR (MODIFIKASI UTAMA) --- */
         .navbar-glass {
-            background: rgba(11, 13, 23, 0.7); /* Gelap Transparan */
-            backdrop-filter: blur(15px); /* Efek Blur Kaca */
+            /* Ubah background menjadi sedikit lebih ungu/biru transparan agar menyatu */
+            background: rgba(30, 30, 60, 0.6); 
+            backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(0, 210, 255, 0.2); /* Garis Neon Tipis */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-brand {
